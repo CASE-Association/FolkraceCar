@@ -1,4 +1,5 @@
-# CASE RC Car
+# CASE Folkrace Car
+
 Control a rc car wirelessly by tilting your hand!
 
 <img src="images/complete.JPG" width="45%" />
