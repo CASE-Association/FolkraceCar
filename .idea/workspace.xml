@@ -2,48 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="04d68977-1e9d-488f-9f49-be4a6b94078a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/FolkraceCar.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FolkraceCar.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Arduino/software/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Arduino/software/.travis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Arduino/software/platformio.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Arduino/software/platformio.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/align-depth2color.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/align-depth2color.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/auto_calibration_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/auto_calibration_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/HighResHighAccuracyPreset.json" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/HighResHighAccuracyPreset.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/box_dimensioner_multicam_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/box_dimensioner_multicam_demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/calculate_rmsd_kabsch.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/calculate_rmsd_kabsch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/calibration_kabsch.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/calibration_kabsch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/helper_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/helper_functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/measurement_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/measurement_task.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/pattern_chessboard.png" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/pattern_chessboard.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/realsense_device_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/realsense_device_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/box_dimensioner_multicam/samplesetupandoutput.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/box_dimensioner_multicam/samplesetupandoutput.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/depth_auto_calibration_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/depth_auto_calibration_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/AlwaysRunningServer.bash" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/AlwaysRunningServer.bash" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/EtherSenseClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/EtherSenseClient.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/EtherSenseServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/EtherSenseServer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/MultiCameraEthernet.png" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/MultiCameraEthernet.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/UpBoardSwitch.JPG" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/UpBoardSwitch.JPG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ethernet_client_server/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/ethernet_client_server/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/export_ply_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/export_ply_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/frame_queue_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/frame_queue_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/opencv_pointcloud_viewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/opencv_pointcloud_viewer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/opencv_viewer_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/opencv_viewer_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/pybackend_example_1_general.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/pybackend_example_1_general.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/pyglet_pointcloud_viewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/pyglet_pointcloud_viewer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/python-rs400-advanced-mode-example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/python-rs400-advanced-mode-example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/python-tutorial-1-depth.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/python-tutorial-1-depth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/read_bag_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/read_bag_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/t265_example.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/t265_rpy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/t265_stereo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/t265_wheel_odometry/calibration_odometry.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/t265_wheel_odometry/t265_wheel_odometry.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -64,6 +24,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar\realsense_examples" />
       <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -221,7 +182,7 @@
       <option name="presentableId" value="Default" />
       <updated>1582328035004</updated>
       <workItem from="1582328036370" duration="8185000" />
-      <workItem from="1582367235527" duration="5830000" />
+      <workItem from="1582367235527" duration="6577000" />
     </task>
     <servers />
   </component>
