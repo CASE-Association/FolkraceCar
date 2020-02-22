@@ -42,7 +42,7 @@
 
 
 #
-# Template #2: The project is intended to be used as a library with examples.
+# Template #2: The project is intended to be used as a library with realsense_examples.
 #
 
 # language: python
@@ -56,7 +56,7 @@
 #
 # env:
 #     - PLATFORMIO_CI_SRC=path/to/test/file.c
-#     - PLATFORMIO_CI_SRC=examples/file.ino
+#     - PLATFORMIO_CI_SRC=realsense_examples/file.ino
 #     - PLATFORMIO_CI_SRC=path/to/test/directory
 #
 # install:
