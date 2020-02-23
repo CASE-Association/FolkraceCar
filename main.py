@@ -21,26 +21,107 @@ import numpy as np
 import cv2
 import math
 import time
+import threading as mt
 
 frame_width = 640
 frame_height = 480
 fps = 30
-generate_color = True
-generate_depth = True
-camera_car_offset = [0.01, 0, -2.05]  # The offset from camera to car pivot point. [w h l]
-car_size = [0.175, 0.1, 0.3]  # [w h l]
+_camera_car_offset = [0.01, 0, -2.05]  # The offset from camera to car pivot point. [w h l]
+_car_size = [0.175, 0.1, 0.3, 0.05]  # [w h l r]
 blind = 0  # For debugging w/o camera
 
 
-# todo external rs.pipeline
-class AppState:
+class Folkracer:
+    def __init__(self, car_size, camera_car_offset):
+        """
+        Main Car object.
+        Defines the model of car and camera position relation.
+        :param car_size: dimension of car in pointcloud dimension
+        :param camera_car_offset: offsent from car origin to camera origin
+        """
+        #  Def car size [width, height, length, wheel radius]
+        if not car_size:
+            self.size = [0.2, 0.1, 0.3, 0.05]
+        else:
+            self.size = car_size
+        if not camera_car_offset:
+            self.camera_offset = np.zeros((3, 1))
+        else:
+            self.camera_offset = camera_car_offset
+        self.steer = 0
+        self.speed = 0
+        self.brake = True
+        self.running = False
+        self.state = [self.steer, self.speed, self.brake]
 
+        # todo this will be the driving vector of which the car will be regulated to follow
+        #  returns longest possible driving direction.
+        #  OBS endpoint may have contact with object
+        self.drive_vector = np.zeros((1, 2))   # [x, y]
+
+    def start(self):
+        self.running = True
+        car_hand = mt.Thread(target=self.car_handler, name='car_handler')
+        try:
+            car_hand.start()
+        except Exception as err:
+            print("Error: unable to start car_handler thread, err: {}".format(err))
+        return car_hand
+
+    def end(self):
+        self.running = False
+
+    def car_handler(self):
+        while self.running:
+            print('Steer: {} Speed: {} Is running: {}'.format(self.steer, self.speed, self.running))
+            time.sleep(2)
+        print('car_handler has ended')
+
+
+class PathPlanner:
+    def __init__(self, Car):
+        """
+        Gradient decent solving path planner ## todo Evaluate against other methods of path planning
+        :param Car: Object to give driving vector
+        """
+        self.Car = Car
+        self.running = False
+
+    def start(self):
+        self.running = True
+        path_plan = mt.Thread(target=self.path_plan, name='path_planner')
+        try:
+            path_plan.start()
+        except Exception as err:
+            print("Error: unable to start path_planner thread, err: {}".format(err))
+        return path_plan
+
+    def end(self):
+        self.running = False
+
+    def path_plan(self):
+        while self.running:
+            print(self.Car.steer)
+            time.sleep(1)
+
+        print('Path planner ended')
+
+
+class AppState:
     def __init__(self, camera_offset=None):
+        """
+        Original implementation by Intel Corporation.
+        modified by CASE Association.
+        ""
+        This class models the maps of the car/camera from 3D - 2D
+        :param camera_offset: Offset between camera and car origin
+        """
         if camera_offset is None:
             camera_offset = [0, 0, 0]
         self.WIN_NAME = 'RealSense'
+        self.offset = camera_offset
         self.pitch, self.yaw = math.radians(-10), math.radians(-15)
-        self.translation = np.array(camera_car_offset, dtype=np.float32)
+        self.translation = np.array(self.offset, dtype=np.float32)
         self.distance = 3
         self.prev_mouse = 0, 0
         self.mouse_btns = [False, False, False]
@@ -51,7 +132,7 @@ class AppState:
 
     def reset(self):
         self.pitch, self.yaw, self.distance = 0, 0, 2
-        self.translation = np.array(camera_car_offset, dtype=np.float32)
+        self.translation = np.array(self.offset, dtype=np.float32)
 
     @property
     def rotation(self):
@@ -64,7 +145,31 @@ class AppState:
         return self.translation + np.array((0, 0, self.distance), dtype=np.float32)
 
 
-def viewer(width=640, height=480, fps=30):
+def rs_init(width=640, height=480, fps=30):
+    """
+    Setup function for Realsens pipe
+    :param width: of camera stream
+    :param height: of camera stream
+    :param fps: of camera stream
+    :return: created pipeline
+    """
+
+    # Configure depth and color streams
+    pipeline = rs.pipeline()
+    config = rs.config()
+    config.enable_stream(rs.stream.depth, width, height, rs.format.z16, fps)
+    config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+
+    try:
+        # Start streaming
+        pipeline.start(config)
+    except Exception as err:
+        print(err)
+
+    return pipeline
+
+
+def viewer(pipeline, Car, camera=True):
     """
     OpenCV and Numpy Point cloud Software Renderer
 
@@ -89,20 +194,11 @@ def viewer(width=640, height=480, fps=30):
         [q\ESC] Quit
     """
 
-    state = AppState(camera_car_offset)
-
-    # Configure depth and color streams
-    pipeline = rs.pipeline()
-    config = rs.config()
-    config.enable_stream(rs.stream.depth, width, height, rs.format.z16, fps)
-    config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+    state = AppState(Car.camera_offset)
 
     try:
-        if blind:
+        if not camera:
             raise RuntimeError
-        # Start streaming
-        pipeline.start(config)
-
 
         # Get stream profile and camera intrinsics
         profile = pipeline.get_active_profile()
@@ -117,10 +213,8 @@ def viewer(width=640, height=480, fps=30):
         colorizer = rs.colorizer()
     except RuntimeError as err:
         print(err)
-        w, h = width, height
+        w, h = 648, 480
         pc = None
-
-
 
     def mouse_cb(event, x, y, flags, param):
 
@@ -294,7 +388,7 @@ def viewer(width=640, height=480, fps=30):
             color = [75, 75, 75]
         [x, y, z] = coord
         pt_hub = view(pos + np.dot((x, y, z), rotation))
-        pt_rad = view(pos + np.dot((x, y-radius, z-radius), rotation))
+        pt_rad = view(pos + np.dot((x, y - radius, z - radius), rotation))
         p0 = project(pt_hub.reshape(-1, 3))[0]
         p1 = project(pt_rad.reshape(-1, 3))[0]
         if np.isnan(p0).any() or np.isnan(p1).any():
@@ -302,7 +396,7 @@ def viewer(width=640, height=480, fps=30):
         rad = np.subtract(p0, p1)
         p = tuple(p0.astype(int))
 
-        ang = np.tan(np.abs(rad[0]/rad[1])) * 90 / np.pi
+        ang = np.tan(np.abs(rad[0] / rad[1])) * 90 / np.pi
 
         rad = tuple(np.abs(rad).astype(int))
         cv2.ellipse(out, p, rad, ang, 0.0, 360.0, color, thickness)
@@ -316,7 +410,7 @@ def viewer(width=640, height=480, fps=30):
         if car_size is None:
             car_size = [2, 1.5, 7.5]
 
-          # Generate wheels
+        # Generate wheels
         def wheel(side):
             iw = side
             radius = 0.05
@@ -324,46 +418,45 @@ def viewer(width=640, height=480, fps=30):
             for k in [0, width]:  # inside/outside of wheel
                 for jw in [-1, 1]:
                     cicle(out, pos, ((1.1 + k) * iw * x, y, 0.65 * jw * z), radius=radius)
-                    cicle(out, pos, ((1.1 + k) * iw * x, y, 0.65 * jw * z), radius=radius, color=[10,10,10], thickness=2)
+                    cicle(out, pos, ((1.1 + k) * iw * x, y, 0.65 * jw * z), radius=radius, color=[10, 10, 10],
+                          thickness=2)
                     if k:
                         pass
-                        #pt1 = view(pos + np.dot(((1.1 + k) * iw * x, y+radius, 0.65 * jw * z), rotation))
-                        #pt2 = view(pos + np.dot(((1.1) * iw * x, y+ radius, 0.65 * jw * z), rotation))
-                        #line3d(out, pt1, pt2, color=[250, 10, 25], thickness=2)
-                        #cicle(out, pos, ((1.11 + k) * iw * x, y, 0.65 * jw * z), radius=0.01, color=[0, 10, 25], thickness=4)
-
+                        # pt1 = view(pos + np.dot(((1.1 + k) * iw * x, y+radius, 0.65 * jw * z), rotation))
+                        # pt2 = view(pos + np.dot(((1.1) * iw * x, y+ radius, 0.65 * jw * z), rotation))
+                        # line3d(out, pt1, pt2, color=[250, 10, 25], thickness=2)
+                        # cicle(out, pos, ((1.11 + k) * iw * x, y, 0.65 * jw * z), radius=0.01, color=[0, 10, 25], thickness=4)
 
         def body():
             # Generate body
             for i in [-1, 1]:
                 for j in [-1, 1]:
-                    line3d(out, view(pos + np.dot((j*x, i*y, -z), rotation)),
-                           view(pos + np.dot((j*x, i*y, z), rotation)), color, thickness=2)
+                    line3d(out, view(pos + np.dot((j * x, i * y, -z), rotation)),
+                           view(pos + np.dot((j * x, i * y, z), rotation)), color, thickness=2)
 
-                    line3d(out, view(pos + np.dot((-x, i*y, j*z), rotation)),
-                           view(pos + np.dot((x, i*y, j*z), rotation)), color, thickness=1)
+                    line3d(out, view(pos + np.dot((-x, i * y, j * z), rotation)),
+                           view(pos + np.dot((x, i * y, j * z), rotation)), color, thickness=1)
 
-                    line3d(out, view(pos + np.dot((i*x, -y, 0.9*j*z), rotation)),
-                           view(pos + np.dot((i*x, y, j*z), rotation)), [40,120,40], thickness=2)
+                    line3d(out, view(pos + np.dot((i * x, -y, 0.9 * j * z), rotation)),
+                           view(pos + np.dot((i * x, y, j * z), rotation)), [40, 120, 40], thickness=2)
 
         pos = np.array(pos)
-        [w, h, l] = car_size
+        [w, h, l, _] = car_size
         # center of car
         x, y, z = w / 2, h / 2, l / 2
         # get viewed side of car
-        side = np.sign(-view(pos + np.dot((x+0.1, 0, 0), rotation))[0]).astype(int)
+        side = np.sign(-view(pos + np.dot((x, 0, 0), rotation))[0]).astype(int)
+        # fixme sidechange not considering width of car
         # Generate car
         wheel(-side)
         body()
         wheel(side)
 
-
-
-
-
-
     while True:
         # Grab camera data
+        if Car:
+            pass
+
         if not state.paused:
             if pc:
                 # Wait for a coherent pair of frames: depth and color
@@ -403,7 +496,7 @@ def viewer(width=640, height=480, fps=30):
 
         out.fill(0)
 
-        axes(out, view([0, 0, 0]), state.rotation, size=0.1, thickness=1)
+        axes(out, view(np.zeros((1, 3))), state.rotation, size=0.1, thickness=1)
 
         if pc:
             if not state.scale or out.shape[:2] == (h, w):
@@ -414,9 +507,13 @@ def viewer(width=640, height=480, fps=30):
                 tmp = cv2.resize(
                     tmp, out.shape[:2][::-1], interpolation=cv2.INTER_NEAREST)
                 np.putmask(out, tmp > 0, tmp)
+        # todo get grid to show est "driving plane"
+        grid(out, pos=[state.offset[0],
+                       state.offset[1] + Car.size[1] / 2 + Car.size[3],
+                       state.offset[2] + 2], size=1, n=15)
 
-        grid(out, pos=[camera_car_offset[0], camera_car_offset[1]+car_size[1]/2+0.05, camera_car_offset[2] + 2], size=1, n=10)
-        car_model(out, pos=[camera_car_offset[0], camera_car_offset[1], camera_car_offset[2] + 2], car_size=car_size)  # fixme get np.dot to work and hardcoded +2 offset
+        # fixme get np.dot to work and hardcoded +2 offset
+        car_model(out, pos=[state.offset[0], state.offset[1], state.offset[2] + 2], car_size=Car.size)
         if pc: frustum(out, depth_intrinsics)
 
         if any(state.mouse_btns):
@@ -437,10 +534,7 @@ def viewer(width=640, height=480, fps=30):
                              '[z] Scaling '
                              '[c] Color '
                              '[s] Save PNG '
-                             '[e] Export cloud', (5, height-10), cv2.FONT_HERSHEY_COMPLEX, 0.37, (110, 250, 110), 1)
-
-
-
+                             '[e] Export cloud', (5, 10), cv2.FONT_HERSHEY_COMPLEX, 0.37, (110, 250, 110), 1)
 
         cv2.imshow(state.WIN_NAME, out)
         key = cv2.waitKey(1)
@@ -475,9 +569,27 @@ def viewer(width=640, height=480, fps=30):
 
 
 def main():
-    viewer()
+    """
+    Main Folkrace function
+    :return: None
+    """
+    # initialize Realsense pipeline
+    pl = rs_init()
+
+    # Creat Car and Path planner
+    Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
+    pp = PathPlanner(Car)
+
+    # Start threads
+    #Car.start()
+    #pp.start()
+
+
+    viewer(pl, Car, not blind)
+
+    # Finish, close Car handler
+    Car.end()
 
 
 if __name__ == '__main__':
     main()
-
