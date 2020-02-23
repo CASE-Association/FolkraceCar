@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="04d68977-1e9d-488f-9f49-be4a6b94078a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,15 +11,26 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1Y8dDM1LgIofLKIHKGBKmppSkyM" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/realsense_examples" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -43,7 +54,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.read_bag_example">
+  <component name="RunManager" selected="Python.main">
     <configuration name="export_ply_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FolkraceCar" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -58,6 +69,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/realsense_examples/export_ply_example.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="FolkraceCar" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -110,28 +143,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pyglet_pointcloud_viewer" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="FolkraceCar" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/realsense_examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/realsense_examples/pyglet_pointcloud_viewer.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="read_bag_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FolkraceCar" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -156,18 +167,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.read_bag_example" />
-      <item itemvalue="Python.opencv_viewer_example" />
       <item itemvalue="Python.opencv_pointcloud_viewer" />
-      <item itemvalue="Python.pyglet_pointcloud_viewer" />
       <item itemvalue="Python.export_ply_example" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.opencv_viewer_example" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.read_bag_example" />
-        <item itemvalue="Python.export_ply_example" />
-        <item itemvalue="Python.pyglet_pointcloud_viewer" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.opencv_pointcloud_viewer" />
         <item itemvalue="Python.opencv_viewer_example" />
+        <item itemvalue="Python.read_bag_example" />
+        <item itemvalue="Python.export_ply_example" />
       </list>
     </recent_temporary>
   </component>
@@ -182,7 +193,8 @@
       <option name="presentableId" value="Default" />
       <updated>1582328035004</updated>
       <workItem from="1582328036370" duration="8185000" />
-      <workItem from="1582367235527" duration="7414000" />
+      <workItem from="1582367235527" duration="8152000" />
+      <workItem from="1582395627542" duration="28804000" />
     </task>
     <servers />
   </component>
@@ -220,11 +232,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FolkraceCar$EtherSenseClient.coverage" NAME="EtherSenseClient Coverage Results" MODIFIED="1582334672743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples/ethernet_client_server" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$read_bag_example.coverage" NAME="read_bag_example Coverage Results" MODIFIED="1582392852277" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_viewer_example.coverage" NAME="opencv_viewer_example Coverage Results" MODIFIED="1582368428569" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$read_bag_example.coverage" NAME="read_bag_example Coverage Results" MODIFIED="1582396487656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_viewer_example.coverage" NAME="opencv_viewer_example Coverage Results" MODIFIED="1582414584132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$export_ply_example.coverage" NAME="export_ply_example Coverage Results" MODIFIED="1582392725673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$EtherSenseServer.coverage" NAME="EtherSenseServer Coverage Results" MODIFIED="1582335718281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples/ethernet_client_server" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_pointcloud_viewer.coverage" NAME="opencv_pointcloud_viewer Coverage Results" MODIFIED="1582368557643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$main.coverage" NAME="main Coverage Results" MODIFIED="1582424701800" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FolkraceCar$pyglet_pointcloud_viewer.coverage" NAME="pyglet_pointcloud_viewer Coverage Results" MODIFIED="1582383620678" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_pointcloud_viewer.coverage" NAME="opencv_pointcloud_viewer Coverage Results" MODIFIED="1582414762388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
   </component>
 </project>
