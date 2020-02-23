@@ -27,7 +27,7 @@ frame_height = 480
 fps = 30
 generate_color = True
 generate_depth = True
-camera_car_offset = [0.01, 0.1, -1.95]  # The offset from camera to car pivot point. [w h l]
+camera_car_offset = [0.01, 0, -2.05]  # The offset from camera to car pivot point. [w h l]
 car_size = [0.175, 0.1, 0.3]  # [w h l]
 blind = 0  # For debugging w/o camera
 
@@ -288,6 +288,25 @@ def viewer(width=640, height=480, fps=30):
         # perform uv-mapping
         out[i[m], j[m]] = color[u[m], v[m]]
 
+    def cicle(out, pos, coord, radius, rotation=np.eye(3), color=None, thickness=-1):
+        #  fixme wheel angle
+        if color is None:
+            color = [75, 75, 75]
+        [x, y, z] = coord
+        pt_hub = view(pos + np.dot((x, y, z), rotation))
+        pt_rad = view(pos + np.dot((x, y-radius, z-radius), rotation))
+        p0 = project(pt_hub.reshape(-1, 3))[0]
+        p1 = project(pt_rad.reshape(-1, 3))[0]
+        if np.isnan(p0).any() or np.isnan(p1).any():
+            return
+        rad = np.subtract(p0, p1)
+        p = tuple(p0.astype(int))
+
+        ang = np.tan(np.abs(rad[0]/rad[1])) * 90 / np.pi
+
+        rad = tuple(np.abs(rad).astype(int))
+        cv2.ellipse(out, p, rad, ang, 0.0, 360.0, color, thickness)
+
     out = np.empty((h, w, 3), dtype=np.uint8)
 
     def car_model(out, pos=None, car_size=None, rotation=np.eye(3), color=(0x40, 0x180, 0x80)):
@@ -296,46 +315,51 @@ def viewer(width=640, height=480, fps=30):
             pos = [0, 0, 1]
         if car_size is None:
             car_size = [2, 1.5, 7.5]
-        r = car_size
-        size = 1
-        n = 1
+
+          # Generate wheels
+        def wheel(side):
+            iw = side
+            radius = 0.05
+            width = 0  # 0.1 add extra circle for depth
+            for k in [0, width]:  # inside/outside of wheel
+                for jw in [-1, 1]:
+                    cicle(out, pos, ((1.1 + k) * iw * x, y, 0.65 * jw * z), radius=radius)
+                    cicle(out, pos, ((1.1 + k) * iw * x, y, 0.65 * jw * z), radius=radius, color=[10,10,10], thickness=2)
+                    if k:
+                        pass
+                        #pt1 = view(pos + np.dot(((1.1 + k) * iw * x, y+radius, 0.65 * jw * z), rotation))
+                        #pt2 = view(pos + np.dot(((1.1) * iw * x, y+ radius, 0.65 * jw * z), rotation))
+                        #line3d(out, pt1, pt2, color=[250, 10, 25], thickness=2)
+                        #cicle(out, pos, ((1.11 + k) * iw * x, y, 0.65 * jw * z), radius=0.01, color=[0, 10, 25], thickness=4)
+
+
+        def body():
+            # Generate body
+            for i in [-1, 1]:
+                for j in [-1, 1]:
+                    line3d(out, view(pos + np.dot((j*x, i*y, -z), rotation)),
+                           view(pos + np.dot((j*x, i*y, z), rotation)), color, thickness=2)
+
+                    line3d(out, view(pos + np.dot((-x, i*y, j*z), rotation)),
+                           view(pos + np.dot((x, i*y, j*z), rotation)), color, thickness=1)
+
+                    line3d(out, view(pos + np.dot((i*x, -y, 0.9*j*z), rotation)),
+                           view(pos + np.dot((i*x, y, j*z), rotation)), [40,120,40], thickness=2)
+
         pos = np.array(pos)
-        s = size / float(n)
-        s2 = 0.25 * size
-        #s3 = 0.75
-        [w, h , l] = car_size
-        for i in [-1, 1]:
-            for j in [-1, 1]:
-                x, y, z = w/2, h/2, l/2
-                # Generate body
-                line3d(out, view(pos + np.dot((j*x, i*y, -z), rotation)),
-                       view(pos + np.dot((j*x, i*y, z), rotation)), color, thickness=2)
+        [w, h, l] = car_size
+        # center of car
+        x, y, z = w / 2, h / 2, l / 2
+        # get viewed side of car
+        side = np.sign(-view(pos + np.dot((x+0.1, 0, 0), rotation))[0]).astype(int)
+        # Generate car
+        wheel(-side)
+        body()
+        wheel(side)
 
-                line3d(out, view(pos + np.dot((-x, i*y, j*z), rotation)),
-                       view(pos + np.dot((x, i*y, j*z), rotation)), color, thickness=1)
 
-                line3d(out, view(pos + np.dot((i*x, -y, 0.9*j*z), rotation)),
-                       view(pos + np.dot((i*x, y, j*z), rotation)), [40,120,40], thickness=2)
 
-                # Generate wheel
-                # We need 2 points to estimate wheel shape
-                r = 0.05  # radius
 
-                pt_hub = view(pos + np.dot((1.1 * i * x, y, 0.65 * j * z), rotation))
-                pt_rad = view(pos + np.dot((1.1 * i * x, y-r, 0.65 * j * z-r), rotation))
-                p0 = project(pt_hub.reshape(-1, 3))[0]
-                p1 = project(pt_rad.reshape(-1, 3))[0]
-                if np.isnan(p0).any() or np.isnan(p1).any():
-                    return
-                rad = np.subtract(p0, p1)
-                p = tuple(p0.astype(int))
-
-                #ang = 90 + np.arctan2(rad[1], rad[0]) * 360 / np.pi
-
-                rad = tuple(np.abs(rad).astype(int))
-                cv2.ellipse(out, p, rad, 0, 0.0, 360.0, [75, 75, 75], -1)
-                cv2.ellipse(out, p, (int(rad[0]/4), int(rad[1]/4)), 0, 0.0, 360.0, [0, 10, 25], -1)
-                cv2.ellipse(out, p, rad, 0, 0.0, 360.0, [0, 10, 25], 4)
 
 
     while True:
