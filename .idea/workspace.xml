@@ -2,11 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="04d68977-1e9d-488f-9f49-be4a6b94078a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/module/Folkracer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/module/PathPlanner.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/module/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/module/ImageHandler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/module/MatrixMagic.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/module/out.ply" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/module/out.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out.ply" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/module/PathPlanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/module/PathPlanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/realsense_examples/align-depth2color.py" beforeDir="false" afterPath="$PROJECT_DIR$/realsense_examples/align-depth2color.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,17 +36,18 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/realsense_examples" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/module" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar\realsense_examples" />
-      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar\Arduino" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar\module" />
+      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar\realsense_examples" />
+      <recent name="C:\Users\StefanX1\Documents\CASE\FolkraceCar" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -58,7 +63,29 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="export_ply_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="DepthGrad" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="FolkraceCar" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/module" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/module/DepthGrad.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="align-depth2color" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FolkraceCar" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -71,7 +98,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/realsense_examples/export_ply_example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/realsense_examples/align-depth2color.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -146,42 +173,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="read_bag_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="FolkraceCar" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/realsense_examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/realsense_examples/read_bag_example.py" />
-      <option name="PARAMETERS" value="-i realsense_examples/1.ply" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
-      <item itemvalue="Python.read_bag_example" />
       <item itemvalue="Python.opencv_pointcloud_viewer" />
-      <item itemvalue="Python.export_ply_example" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.opencv_viewer_example" />
+      <item itemvalue="Python.DepthGrad" />
+      <item itemvalue="Python.align-depth2color" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.opencv_pointcloud_viewer" />
+        <item itemvalue="Python.align-depth2color" />
         <item itemvalue="Python.opencv_viewer_example" />
-        <item itemvalue="Python.read_bag_example" />
-        <item itemvalue="Python.export_ply_example" />
+        <item itemvalue="Python.DepthGrad" />
+        <item itemvalue="Python.opencv_pointcloud_viewer" />
       </list>
     </recent_temporary>
   </component>
@@ -197,7 +202,8 @@
       <updated>1582328035004</updated>
       <workItem from="1582328036370" duration="8185000" />
       <workItem from="1582367235527" duration="8152000" />
-      <workItem from="1582395627542" duration="55501000" />
+      <workItem from="1582395627542" duration="58768000" />
+      <workItem from="1582481156588" duration="12996000" />
     </task>
     <servers />
   </component>
@@ -231,16 +237,30 @@
           <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="self.points[0, 1]" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FolkraceCar$EtherSenseClient.coverage" NAME="EtherSenseClient Coverage Results" MODIFIED="1582334672743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples/ethernet_client_server" />
     <SUITE FILE_PATH="coverage/FolkraceCar$read_bag_example.coverage" NAME="read_bag_example Coverage Results" MODIFIED="1582396487656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_viewer_example.coverage" NAME="opencv_viewer_example Coverage Results" MODIFIED="1582414584132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$align_depth2color.coverage" NAME="align-depth2color Coverage Results" MODIFIED="1582567858678" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$opencv_viewer_example.coverage" NAME="opencv_viewer_example Coverage Results" MODIFIED="1582562046423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$export_ply_example.coverage" NAME="export_ply_example Coverage Results" MODIFIED="1582392725673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$EtherSenseServer.coverage" NAME="EtherSenseServer Coverage Results" MODIFIED="1582335718281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples/ethernet_client_server" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$main.coverage" NAME="main Coverage Results" MODIFIED="1582477935997" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$main.coverage" NAME="main Coverage Results" MODIFIED="1582567931686" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FolkraceCar$pyglet_pointcloud_viewer.coverage" NAME="pyglet_pointcloud_viewer Coverage Results" MODIFIED="1582383620678" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$opencv_pointcloud_viewer.coverage" NAME="opencv_pointcloud_viewer Coverage Results" MODIFIED="1582414762388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$DepthGrad.coverage" NAME="DepthGrad Coverage Results" MODIFIED="1582480588243" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/module" />
   </component>
 </project>

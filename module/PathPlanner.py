@@ -1,9 +1,12 @@
 import pyrealsense2 as rs
 import numpy as np
-from numpy.linalg import svd
+from numpy.linalg import svd, det
 import time
 import threading as mt
+from module.MatrixMagic import *
 
+
+# todo migrate from multithread to multiprocessing
 class PathPlanner:
     def __init__(self, pipeline):
         """
@@ -12,15 +15,19 @@ class PathPlanner:
         """
         self.pipe = pipeline
         self.running = False
-        self.decimate_val  = 0.1 # todo get good value
+        self.decimate_val = 1
         # Processing blocks
         self.pc = rs.pointcloud()
         self.decimate = rs.decimation_filter()
         #self.decimate.set_option(rs.option.filter_magnitude, 2 ** self.decimate_val)
-        # self.colorizer = rs.colorizer()
+        self.colorizer = rs.colorizer()
         self.w = 0
         self.h = 0
+        self.points, self.depth_img, self.texcoords = self.process_cloud()
         self.ground_plane = self.get_ground_plane()
+
+        self.path_vector = [0, 0]
+
         try:
             # Get stream profile and camera intrinsics
             profile = self.pipe.get_active_profile()
@@ -42,6 +49,34 @@ class PathPlanner:
     def end(self):
         self.running = False
 
+    def rigid_transform_3D(self, A, B):
+            assert len(A) == len(B)
+
+            N = A.shape[0];  # total points
+
+            centroid_A = np.mean(A, axis=0)
+            centroid_B = np.mean(B, axis=0)
+
+            # centre the points
+            AA = A - np.tile(centroid_A, (N, 1))
+            BB = B - np.tile(centroid_B, (N, 1))
+
+            # dot is matrix multiplication for array
+            H = np.transpose(AA) * BB
+
+            U, S, Vt = svd(H)
+
+            R = Vt.T * U.T
+
+            # special reflection case
+            if det(R) < 0:
+                Vt[2, :] *= -1
+                R = Vt.T * U.T
+
+            t = -R * centroid_A.T + centroid_B.T
+
+            return R, t
+
     def get_ground_plane(self):
         """
         Estimate ground plain using Least square
@@ -50,6 +85,8 @@ class PathPlanner:
         """
 
         pos, normal = self.planeFit()
+
+        rot, _ = self.rigid_transform_3D(pos, normal)
 
         rot = np.eye(3)  # todo calculate rotation matrix
 
@@ -68,7 +105,7 @@ class PathPlanner:
         :return: a point, p, on the plane (the point-cloud centroid),
         and the normal, n.
         """
-        points = self.process_cloud()
+        points = self.points
 
         points = np.reshape(points, (np.shape(points)[0], -1))  # Collapse trialing dimensions
         assert points.shape[0] <= points.shape[1], "There are only {} points in {} dimensions.".format(points.shape[1],
@@ -94,28 +131,40 @@ class PathPlanner:
 
             depth_image = np.asanyarray(depth_frame.get_data())
 
-            #depth_colormap = np.asanyarray(
-            #    colorizer.colorize(depth_frame).get_data())
+            depth_colormap = np.asanyarray(self.colorizer.colorize(depth_frame).get_data())
 
             #if state.color:
             #    mapped_frame, color_source = color_frame, color_image
             #else:
-            #    mapped_frame, color_source = depth_frame, depth_colormap
+            depth_frame, color_source = depth_frame, depth_colormap
 
             points = self.pc.calculate(depth_frame)
-            #self.pc.map_to(mapped_frame)
+            self.pc.map_to(depth_frame)
 
             # Pointcloud data to arrays
             v, t = points.get_vertices(), points.get_texture_coordinates()
             verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
-            #texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
+            texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
         except:
             verts = np.zeros((3, 3))
 
-        return np.transpose(verts)
+        return np.transpose(verts), depth_frame, texcoords
+
+    def get_direction(self):
+        pass
+        '''
+        h = [0, 100]  # Heightspan of interset
+
+        for p in self.points:
+            if h[0] <= p[1] <= h[1]:
+
+        self.path_vector = [0, 0]        
+        '''
+
 
     def path_plan(self):
         while self.running:
+            self.points, _, _ = self.process_cloud()
             self.ground_plane = self.get_ground_plane()
             time.sleep(0.1)
 
