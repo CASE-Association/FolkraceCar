@@ -21,7 +21,7 @@ import numpy as np
 import cv2
 import math
 import time
-from module.MatrixMagic import *
+from module.ImageHandler import *
 from module.Folkracer import Folkracer
 from module.PathPlanner import PathPlanner
 

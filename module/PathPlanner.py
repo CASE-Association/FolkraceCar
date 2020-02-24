@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import svd, det
 import time
 import threading as mt
-from module.MatrixMagic import *
+from module.ImageHandler import *
 
 
 # todo migrate from multithread to multiprocessing
