@@ -8,34 +8,18 @@ from module.ImageHandler import *
 
 # todo migrate from multithread to multiprocessing
 class PathPlanner:
-    def __init__(self, pipeline):
+    def __init__(self, Camera):
         """
         Gradient decent solving path planner ## todo Evaluate against other methods of path planning
         :param Car: Object to give driving vector
         """
-        self.pipe = pipeline
+        self.cam = Camera
         self.running = False
-        self.decimate_val = 1
-        # Processing blocks
-        self.pc = rs.pointcloud()
-        self.decimate = rs.decimation_filter()
-        #self.decimate.set_option(rs.option.filter_magnitude, 2 ** self.decimate_val)
-        self.colorizer = rs.colorizer()
-        self.w = 0
-        self.h = 0
-        self.points, self.depth_img, self.texcoords = self.process_cloud()
-        self.ground_plane = self.get_ground_plane()
 
-        self.path_vector = [0, 0]
+        self.points = self.process_cloud()
+        self.ground_plane = self._get_ground_plane()
 
-        try:
-            # Get stream profile and camera intrinsics
-            profile = self.pipe.get_active_profile()
-            depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
-            depth_intrinsics = depth_profile.get_intrinsics()
-            self.w, self.h = depth_intrinsics.width, depth_intrinsics.height
-        except RuntimeError as err:
-            print(err)
+        self.path_vector = self.get_path()
 
     def start(self):
         self.running = True
@@ -49,10 +33,10 @@ class PathPlanner:
     def end(self):
         self.running = False
 
-    def rigid_transform_3D(self, A, B):
+    def _rigid_transform_3D(self, A, B):
             assert len(A) == len(B)
 
-            N = A.shape[0];  # total points
+            N = A.shape[0]  # total points
 
             centroid_A = np.mean(A, axis=0)
             centroid_B = np.mean(B, axis=0)
@@ -77,7 +61,7 @@ class PathPlanner:
 
             return R, t
 
-    def get_ground_plane(self):
+    def _get_ground_plane(self):
         """
         Estimate ground plain using Least square
         todo evaluate usage of RANSAC
@@ -86,7 +70,7 @@ class PathPlanner:
 
         pos, normal = self.planeFit()
 
-        rot, _ = self.rigid_transform_3D(pos, normal)
+        rot, _ = self._rigid_transform_3D(pos, normal)
 
         rot = np.eye(3)  # todo calculate rotation matrix
 
@@ -116,41 +100,18 @@ class PathPlanner:
         return ctr, svd(M)[0][:, -1]
 
     def process_cloud(self):
-        try:
-            # Wait for a coherent pair of frames: depth and color
-            frames = self.pipe.wait_for_frames()
+        """
+        Process pointcloud from Camera
+        :return:
+        """
 
-            depth_frame = frames.get_depth_frame()
+        #v, t, verts, texcoords, color_source, mapped_frame = self.cam.get_data()
 
-            depth_frame = self.decimate.process(depth_frame)
+        verts = self.cam.get_verts()
 
-            # Grab new intrinsics (may be changed by decimation)
-            depth_intrinsics = rs.video_stream_profile(
-                depth_frame.profile).get_intrinsics()
-            w, h = depth_intrinsics.width, depth_intrinsics.height
+        return np.transpose(verts)
 
-            depth_image = np.asanyarray(depth_frame.get_data())
-
-            depth_colormap = np.asanyarray(self.colorizer.colorize(depth_frame).get_data())
-
-            #if state.color:
-            #    mapped_frame, color_source = color_frame, color_image
-            #else:
-            depth_frame, color_source = depth_frame, depth_colormap
-
-            points = self.pc.calculate(depth_frame)
-            self.pc.map_to(depth_frame)
-
-            # Pointcloud data to arrays
-            v, t = points.get_vertices(), points.get_texture_coordinates()
-            verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
-            texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
-        except:
-            verts = np.zeros((3, 3))
-
-        return np.transpose(verts), depth_frame, texcoords
-
-    def get_direction(self):
+    def get_path(self):
         pass
         '''
         h = [0, 100]  # Heightspan of interset
@@ -160,12 +121,13 @@ class PathPlanner:
 
         self.path_vector = [0, 0]        
         '''
+        return [0, 0]
 
 
     def path_plan(self):
         while self.running:
-            self.points, _, _ = self.process_cloud()
-            self.ground_plane = self.get_ground_plane()
+            self.points = self.process_cloud()
+            self.ground_plane = self._get_ground_plane()
             time.sleep(0.1)
 
         print('Path planner ended')
