@@ -1,8 +1,9 @@
-from main import *
 import cv2.load_config_py3
 import cv2
 import math
 import time
+import pyrealsense2 as rs
+import numpy as np
 
 from main import _camera_car_offset, frame_height, frame_width
 

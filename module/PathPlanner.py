@@ -1,5 +1,18 @@
+from typing import Union
+
 import pyrealsense2 as rs
-import numpy as np
+from cupy.core.core import ndarray
+from numpy.core._multiarray_umath import ndarray
+_CUDA = False
+try:
+    import cupy as cp
+    _CUDA = True
+    print('Using CuPy for CUDA acceleration! :D')
+except Exception as err:
+    print(err)
+    import numpy as cp
+    print('CuPy unsuported, Using Numpy as cp replacement :(')
+
 from numpy.linalg import svd, det
 import time
 import threading as mt
@@ -16,7 +29,7 @@ class PathPlanner:
         self.cam = Camera
         self.running = False
 
-        self.points = self.process_cloud()
+        self.points = cp.transpose(self.cam.get_verts())  # todo fix some function to call instead
         self.ground_plane = self._get_ground_plane()
 
         self.path_vector = self.get_path()
@@ -99,17 +112,71 @@ class PathPlanner:
         M = np.dot(x, x.T)  # Could also use np.cov(x) here.
         return ctr, svd(M)[0][:, -1]
 
-    def process_cloud(self):
+    def process_verts(self, verts, tunnel_size, theta=0.0, phi=0.0, ground_plane=None):
         """
-        Process pointcloud from Camera
-        :return:
+        Process verts from Camera.
+
+        :param tunnel_size: the desired tunnel size, [w, h]
+        :param theta: The desired turning angle
+        :param phi: The desired incline angle.
+        :param ground_plane: The estimated driving plane.
+        :return: All points in defined direction and for the defined tunnel size.
+        """
+        # todo
+        #  implement as cp
+        #  driving plane
+
+        p = np.asanyarray(verts)
+        X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
+        [w, h] = tunnel_size
+
+        # inlier index
+        I = []
+
+        """
+        Basic depth filter (Z)
+        do not allow points with no distance (z=0)
         """
 
-        #v, t, verts, texcoords, color_source, mapped_frame = self.cam.get_data()
+        I = np.where((Z > 0.0))[0]
+        # if no inliers return None
+        if not I.any():
+            return None
 
-        verts = self.cam.get_verts()
+        """
+        Filter height (Y) inliers    # todo implement plane filter instead of static height
+        
+        using the line equation y = kx + m we can  formulate the inlier constraint as
+        -mlim <= m <= mlim for m = y - kx. 
+        In this case we substitute y with the Y-array (Height) and x with the Z - array (Depth).  
+        """
+        radPhi = np.deg2rad(phi)
+        k_y = np.tan(-radPhi)  # negate to get correct incline direction
+        mlim_h = [-h / 2, h / 2]
+        m = np.subtract(Y[I], np.multiply(k_y, Z[I]))  # {m = y - kx} => m = Y - k.*Z
+        # Inlier indexes
+        I_y = np.where(np.logical_and(mlim_h[0] <= m, mlim_h[1] >= m))[0]
 
-        return np.transpose(verts)
+        I = I[I_y]
+
+        """
+        Filter width (X) inliers 
+        
+        using the same equation as above but now with the m being a function of k,X and Z.
+        we now only use inliers (I_y) form the above step to reduce necessary computations.
+        """
+        radTheta = np.deg2rad(theta)
+        k_x = np.tan(radTheta)
+        mlim_w = [-w / 2, w / 2]
+        m = np.subtract(X[I], np.multiply(k_x, Z[I]))  # {m = y - kx} => m = X - k.*Z
+        # Inlier of Y inliers
+        I_x = np.where(np.logical_and(mlim_w[0] <= m, mlim_w[1] >= m))[0]
+
+        # Pop outliers from I
+        I = I[I_x]
+
+
+        return p[I]
 
     def get_path(self):
         pass

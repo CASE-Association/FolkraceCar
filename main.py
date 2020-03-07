@@ -19,18 +19,10 @@ import pyrealsense2 as rs
 import cv2
 import numpy as np
 import multiprocessing as mp
-_CUDA_MATH = False
-try:
-    import cupy as cp
-    _CUDA_MATH = True
-    print('Using CuPy for CUDA acceleration! :D')
-except Exception as err:
-    print(err)
-
 from module.ImageHandler import *
 from module.Folkracer import Folkracer
 from module.PathPlanner import PathPlanner
-
+import time
 
 import signal
 
@@ -40,7 +32,7 @@ fps = 0
 dfps = 90
 _camera_car_offset = [0.01, 0,
                       -2.05]  # The offset from camera to car pivot point. [w h l] # todo conv to understandable values?
-_car_size = [0.175, 0.1, 0.3, 0.05]  # [w h l r]
+_car_size = [0.2, 0.1, 0.3, 0.05]  # [w h l r]
 blind = 0  # For debugging w/o camera
 
 
@@ -67,8 +59,7 @@ def rs_init(width=640, height=480, fps=0, dfps=0):
     return pipeline
 
 
-def disp(camera):
-    run = True
+def disp(camera, run=True):
     theta = 0  # Scanning direction, 0 = straight ahead
     dtheta = 5  # Scanning step in degrees
     x0 = [0, 0]
@@ -83,9 +74,8 @@ def disp(camera):
     theta_range = 60
     _t_last = 0
     _fps = 30
-    _plot_scale = frame_height/z_range[1]
+    _plot_scale = frame_height / z_range[1]
     _scan_dir = 1
-
 
     def line(theta, r, x0):
         """
@@ -96,7 +86,7 @@ def disp(camera):
         :return: vector
         """
         R = r * _plot_scale
-        x1 = int(x0[0] * _plot_scale + frame_width/2)
+        x1 = int(x0[0] * _plot_scale + frame_width / 2)
         y1 = int(x0[1] * _plot_scale + frame_height)
         x2 = int(x1 + R * np.sin(theta))
         y2 = int(y1 - R * np.cos(theta))
@@ -129,15 +119,15 @@ def disp(camera):
         pts[:, 0] += frame_width / 2  # center x axis
         pts[:, 2] = frame_height - pts[:, 2]  # Flip z projection
         pts = pts.astype(int)
-        #pts[:, 1] *= 255/np.max(np.abs(pts[:, 1]))  # scale to fit grayscale
-        #_inliers = np.where(np.logical_and(pts[0] <= frame_width, pts[2] <= frame_height))
-        #pts[1] -= frame_height
-        #pts_coord = np.transpose([pts[:, 0], pts[:, 2], pts[:, 1]])
+        # pts[:, 1] *= 255/np.max(np.abs(pts[:, 1]))  # scale to fit grayscale
+        # _inliers = np.where(np.logical_and(pts[0] <= frame_width, pts[2] <= frame_height))
+        # pts[1] -= frame_height
+        # pts_coord = np.transpose([pts[:, 0], pts[:, 2], pts[:, 1]])
         gray = np.zeros((frame_height, frame_width), np.uint8)
 
         if only_closes:
             for w in range(0, frame_width, step):
-                i = np.where(np.logical_and(pts[:, 0] >= w, pts[:, 0] < w+step))[0]  # get points in line w
+                i = np.where(np.logical_and(pts[:, 0] >= w, pts[:, 0] < w + step))[0]  # get points in line w
                 if i.any():
                     j = np.where(pts[i, 2] == np.min(pts[i, 2]))[0]  # get closest point on line w
                     k = i[j[0]]
@@ -163,7 +153,7 @@ def disp(camera):
             hz = np.round(1 / (_t_now - _t_last), 2)
             _t_last = _t_now
 
-            #plot = np.ones((frame_height, frame_width, 3), np.uint8) * 215  # clear frame
+            # plot = np.ones((frame_height, frame_width, 3), np.uint8) * 215  # clear frame
             plot = plot_pointcloud(points, 1, 3)
 
             X, Y, Z = points[:, 0], points[:, 1], points[:, 2]
@@ -172,28 +162,27 @@ def disp(camera):
             pts_inrange = np.intersect1d(y_inrange, z_inrange)
             px, py = X[pts_inrange], Z[pts_inrange]
 
-            if abs(theta) > np.deg2rad(theta_range/2):
-                theta = np.deg2rad(-theta_range/2)
+            if abs(theta) > np.deg2rad(theta_range / 2):
+                theta = np.deg2rad(-theta_range / 2)
             else:
                 theta += np.deg2rad(dtheta)
 
             pxi, pyi = inliers([X[pts_inrange], Z[pts_inrange]], theta, d, x0)
 
             dx = delta_x(theta, d)
-            ll = line(theta, r-0.1, np.subtract(x0, [dx, 0]))
+            ll = line(theta, r - 0.1, np.subtract(x0, [dx, 0]))
             lc = line(theta, r, x0)
-            lr = line(theta, r-0.1, np.add(x0, [dx, 0]))
+            lr = line(theta, r - 0.1, np.add(x0, [dx, 0]))
 
             """plot = cv2.line(plot, ll[0], ll[1], (0, 0, 255), l_thickness)
             plot = cv2.line(plot, lc[0], lc[1], (0, 255, 0), l_thickness)
             plot = cv2.line(plot, lr[0], lr[1], (0, 0, 255), l_thickness)"""
 
             cv2.imshow(window_name, plot)
-            _fps = round(0.99*_fps + 0.01 * hz, 1)  # some smoothening
+            _fps = round(0.99 * _fps + 0.01 * hz, 1)  # some smoothening
             window_title = ('Depth Scan | Theta: {:5}deg | Fps: {:5.1f}Hz'.format(np.round(np.rad2deg(theta)), _fps))
             cv2.setWindowTitle(window_name, window_title)
             time.sleep(0.001)
-
 
             if cv2.waitKey(1) in (27, ord("q")):
                 run = False  # esc to quit
@@ -206,6 +195,37 @@ def disp(camera):
             run = False
 
 
+def plot_pointcloud(points, only_closes=False, step=3):
+    z_range = [0.01, 5]  # depth span in meters
+    _plot_scale = frame_height / z_range[1]
+
+    pts = np.multiply(points, _plot_scale)
+    pts[:, 0] += frame_width / 2  # center x axis
+    pts[:, 2] = frame_height - pts[:, 2]  # Flip z projection
+    pts = pts.astype(int)
+    # pts[:, 1] *= 255/np.max(np.abs(pts[:, 1]))  # scale to fit grayscale
+    # _inliers = np.where(np.logical_and(pts[0] <= frame_width, pts[2] <= frame_height))
+    # pts[1] -= frame_height
+    # pts_coord = np.transpose([pts[:, 0], pts[:, 2], pts[:, 1]])
+    gray = np.zeros((frame_height, frame_width), np.uint8)
+
+    if only_closes:
+        for w in range(0, frame_width, step):
+            i = np.where(np.logical_and(pts[:, 0] >= w, pts[:, 0] < w + step))[0]  # get points in line w
+            if i.any():
+                j = np.where(pts[i, 2] == np.min(pts[i, 2]))[0]  # get closest point on line w
+                k = i[j[0]]
+                p = pts[k]
+                if 0 <= p[0] < frame_width and 0 <= p[2] < frame_height and p[1] <= 255:
+                    gray[p[2], p[0]] = p[1]
+    else:
+        for p in pts.astype(int):
+            if 0 <= p[0] < frame_width and 0 <= p[2] < frame_height and p[1] <= 255:
+                gray[p[2], p[0]] = p[1]
+
+    return cv2.applyColorMap(gray, cv2.COLORMAP_JET)
+
+
 def main():
     """
     Main Folkrace function
@@ -215,22 +235,59 @@ def main():
     camera = Camera(rs_init(frame_width, frame_height, fps, dfps))
 
     # Creat Car object and Path planner
-    #Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
-    #pp = PathPlanner(Camera=camera)
+
+    #   Car is the process handling the dynamics of the car
+    Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
+    pp = PathPlanner(Camera=camera)
 
     # Start threads
     # Car.start()
     # pp.start()
 
+    hz = 0
+    _fps = 30
+    _theta = 0.0
+    _phi = 0.0
+    theta = []
+    run = True
+    _t_last_print = 0
     try:
+        dist = 0
+        while run:
+            _t_start = time.perf_counter()
 
-        disp(camera)
+            tunnel_size = Car.size[0:2]
+            verts = camera.get_verts()
+
+            _max_dist = 0
+            for _theta in range(-25, 26, 5):
+
+                inliers = pp.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=_phi)
+
+                if inliers.any():
+                    Z = inliers[:, 2]
+                    _dist = np.min(Z)
+                    if _dist > _max_dist:
+                        theta = _theta
+                        _max_dist = _dist
+
+            _t_fin = time.perf_counter()
+
+            if _t_last_print + .05 < time.perf_counter():
+                _t_last_print = time.perf_counter()
+                _dt = _t_fin - _t_start
+                hz = 1/_dt
+                _fps = (0.9 * _fps + 0.1 * hz)
+                dist = (0.9 * dist + 0.1 * _max_dist)
+                print('Dist {}m | Theta  {}deg |  f: {}Hz'.format(round(dist, 2), theta, round(_fps, 2)))
+
+
 
     except KeyboardInterrupt:
         pass
     # Finish, close Car handler, Path planner and stream
-    #Car.end()
-    #pp.end()
+    # Car.end()
+    pp.end()
     camera.end()
     print('Main process have ended')
     exit(0)
