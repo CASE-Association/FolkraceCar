@@ -246,11 +246,12 @@ def main():
 
     hz = 0
     _fps = 30
-    _theta = 0.0
     _phi = 0.0
-    theta = []
+    theta = 0.0
+    opt_theta = 0.0
     run = True
     _t_last_print = 0
+    camera.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
     try:
         dist = 0
         while run:
@@ -260,26 +261,28 @@ def main():
             verts = camera.get_verts()
 
             _max_dist = 0
-            for _theta in range(-25, 26, 5):
+            for _theta in range(int(opt_theta-25), int(opt_theta + 26), 10):
 
                 inliers = pp.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=_phi)
 
                 if inliers.any():
                     Z = inliers[:, 2]
                     _dist = np.min(Z)
-                    if _dist > _max_dist:
+                    if _dist > _max_dist * 1.1:  # Must be more than 10 grater
                         theta = _theta
                         _max_dist = _dist
 
+
             _t_fin = time.perf_counter()
 
-            if _t_last_print + .05 < time.perf_counter():
+            if _t_last_print + .1 < time.perf_counter():
                 _t_last_print = time.perf_counter()
                 _dt = _t_fin - _t_start
                 hz = 1/_dt
                 _fps = (0.9 * _fps + 0.1 * hz)
                 dist = (0.9 * dist + 0.1 * _max_dist)
-                print('Dist {}m | Theta  {}deg |  f: {}Hz'.format(round(dist, 2), theta, round(_fps, 2)))
+                opt_theta = round(0.9 * opt_theta + 0.1 * theta, 2)
+                print('Dist {}m | Theta  {}deg |  f: {}Hz'.format(round(dist, 2), opt_theta, round(_fps, 2)))
 
 
 

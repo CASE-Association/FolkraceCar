@@ -3,7 +3,8 @@ from typing import Union
 import pyrealsense2 as rs
 from cupy.core.core import ndarray
 from numpy.core._multiarray_umath import ndarray
-_CUDA = False
+
+"""_CUDA = False
 try:
     import cupy as cp
     _CUDA = True
@@ -11,7 +12,7 @@ try:
 except Exception as err:
     print(err)
     import numpy as cp
-    print('CuPy unsuported, Using Numpy as cp replacement :(')
+    print('CuPy unsuported, Using Numpy as cp replacement :(')"""
 
 from numpy.linalg import svd, det
 import time
@@ -29,7 +30,7 @@ class PathPlanner:
         self.cam = Camera
         self.running = False
 
-        self.points = cp.transpose(self.cam.get_verts())  # todo fix some function to call instead
+        self.points = np.transpose(self.cam.get_verts())  # todo fix some function to call instead
         self.ground_plane = self._get_ground_plane()
 
         self.path_vector = self.get_path()
@@ -126,7 +127,9 @@ class PathPlanner:
         #  implement as cp
         #  driving plane
 
-        p = np.asanyarray(verts)
+        #p = cp.asanyarray(verts)
+        p = verts
+
         X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
         [w, h] = tunnel_size
 
