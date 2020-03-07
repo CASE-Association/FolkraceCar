@@ -1,14 +1,13 @@
-import pyrealsense2 as rs
-import numpy as np
+from main import *
+import cv2.load_config_py3
 import cv2
 import math
 import time
 
 from main import _camera_car_offset, frame_height, frame_width
 
-
 class AppState:
-    def __init__(self, camera_offset=None):
+    def __init__(self, camera_offset=None, win_name='RealSense'):
         """
         Original implementation by Intel Corporation.
         modified by CASE Association.
@@ -18,7 +17,7 @@ class AppState:
         """
         if camera_offset is None:
             camera_offset = [0, 0, 0]
-        self.WIN_NAME = 'RealSense'
+        self.WIN_NAME = win_name
         self.offset = camera_offset
         self.pitch, self.yaw = math.radians(-10), math.radians(-15)
         self.translation = np.array(self.offset, dtype=np.float32)
@@ -44,11 +43,339 @@ class AppState:
     def pivot(self):
         return self.translation + np.array((0, 0, self.distance), dtype=np.float32)
 
+class Camera:
+    def __init__(self, pipeline):
+        self.pipe = pipeline
+        self.scale = 1
+        self.w = 640
+        self.h = 480
+        self.pc = None
+        # Processing blocks
+        self.pc = rs.pointcloud()
+        self.decimate = rs.decimation_filter()
+        self.decimate.set_option(rs.option.filter_magnitude, 2 ** state.decimate)
+        self.colorizer = rs.colorizer()
+        self.state = state  # General ImageHandler model state
+        self.out = out  # General Image handler output if not changed
+
+
+        # Setup camera
+        try:
+            # Get stream profile and camera intrinsics
+            profile = pipeline.get_active_profile()
+            depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
+            self.depth_intrinsics = depth_profile.get_intrinsics()
+            self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+            depth_sensor = profile.get_device().first_depth_sensor()
+            self.scale = depth_sensor.get_depth_scale()
+        except RuntimeError as err:
+            print(err)
+
+
+    def mouse_cb(self, event, x, y, flags, param):
+        state = self.state
+
+        if event == cv2.EVENT_LBUTTONDOWN:
+            state.mouse_btns[0] = True
+
+        if event == cv2.EVENT_LBUTTONUP:
+            state.mouse_btns[0] = False
+
+        if event == cv2.EVENT_RBUTTONDOWN:
+            state.mouse_btns[1] = True
+
+        if event == cv2.EVENT_RBUTTONUP:
+            state.mouse_btns[1] = False
+
+        if event == cv2.EVENT_MBUTTONDOWN:
+            state.mouse_btns[2] = True
+
+        if event == cv2.EVENT_MBUTTONUP:
+            state.mouse_btns[2] = False
+
+        if event == cv2.EVENT_MOUSEMOVE:
+
+            h, w = self.out.shape[:2]
+            dx, dy = x - state.prev_mouse[0], y - state.prev_mouse[1]
+
+            if state.mouse_btns[0]:
+                state.yaw += float(dx) / w * 2
+                state.pitch -= float(dy) / h * 2
+
+            elif state.mouse_btns[1]:
+                dp = np.array((dx / w, dy / h, 0), dtype=np.float32)
+                state.translation -= np.dot(state.rotation, dp)
+
+            elif state.mouse_btns[2]:
+                dz = math.sqrt(dx ** 2 + dy ** 2) * math.copysign(0.01, -dy)
+                state.translation[2] += dz
+                state.distance -= dz
+
+        if event == cv2.EVENT_MOUSEWHEEL:
+            dz = math.copysign(0.1, flags)
+            state.translation[2] += dz
+            state.distance -= dz
+
+        state.prev_mouse = (x, y)
+
+    def generate_window(self):
+        cv2.namedWindow(self.state.WIN_NAME, cv2.WINDOW_AUTOSIZE)
+        cv2.resizeWindow(self.state.WIN_NAME, self.w, self.h)
+        cv2.setMouseCallback(self.state.WIN_NAME, self.mouse_cb)
+
+    def get_data(self):  # todo split into multiple funtions
+        """
+        get all camera data
+        :return:
+        """
+        # Wait for a coherent pair of frames: depth and color
+        frames = self.pipe.wait_for_frames()
+
+        depth_frame = frames.get_depth_frame()
+        color_frame = frames.get_color_frame()
+
+        depth_frame = self.decimate.process(depth_frame)
+
+        # Grab new intrinsics (may be changed by decimation)
+        self.depth_intrinsics = rs.video_stream_profile(
+            depth_frame.profile).get_intrinsics()
+        self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+
+        depth_image = np.asanyarray(depth_frame.get_data())
+        color_image = np.asanyarray(color_frame.get_data())
+
+        depth_colormap = np.asanyarray(
+            self.colorizer.colorize(depth_frame).get_data())
+
+        if self.state.color:
+            mapped_frame, color_source = color_frame, color_image
+        else:
+            mapped_frame, color_source = depth_frame, depth_colormap
+
+        points = self.pc.calculate(depth_frame)
+        self.pc.map_to(mapped_frame)
+
+        # Pointcloud data to arrays
+        v, t = points.get_vertices(), points.get_texture_coordinates()
+        verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+        texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
+
+        return v, t, verts, texcoords, color_source, mapped_frame
+
+    def get_pointcloud(self):
+        # Wait for a coherent pair of frames: depth
+        frames = self.pipe.wait_for_frames()
+
+        depth_frame = frames.get_depth_frame()
+
+        depth_frame = self.decimate.process(depth_frame)
+
+        # Grab new intrinsics (may be changed by decimation)
+        self.depth_intrinsics = rs.video_stream_profile(
+            depth_frame.profile).get_intrinsics()
+        self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+
+        points = self.pc.calculate(depth_frame)
+
+        return points
+
+    def get_verts(self):
+        # Wait for a coherent pair of frames: depth
+        frames = self.pipe.wait_for_frames()
+
+        depth_frame = frames.get_depth_frame()
+
+        depth_frame = self.decimate.process(depth_frame)
+
+        # Grab new intrinsics (may be changed by decimation)
+        self.depth_intrinsics = rs.video_stream_profile(
+            depth_frame.profile).get_intrinsics()
+        self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+
+        points = self.pc.calculate(depth_frame)
+
+        # Pointcloud data to arrays
+        v = points.get_vertices()
+        verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+
+        return verts
+
+    def get_texcoords(self):
+        # Wait for a coherent pair of frames: depth
+        frames = self.pipe.wait_for_frames()
+
+        depth_frame = frames.get_depth_frame()
+
+        depth_frame = self.decimate.process(depth_frame)
+
+        # Grab new intrinsics (may be changed by decimation)
+        self.depth_intrinsics = rs.video_stream_profile(
+            depth_frame.profile).get_intrinsics()
+        self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+
+        points = self.pc.calculate(depth_frame)
+
+        # Pointcloud data to arrays
+        t = points.get_texture_coordinates()
+        texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
+
+        return texcoords
+
+    def visualizer(self, draw=None, path_planner=None, Car = None, Blinde=False):
+        """
+        OpenCV and Numpy Point cloud Software Renderer
+
+        This sample is mostly for demonstration and educational purposes.
+        It really doesn't offer the quality or performance that can be
+        achieved with hardware acceleration.
+
+        Usage:
+        ------
+        Mouse:
+            Drag with left button to rotate around pivot (thick small axes),
+            with right button to translate and the wheel to zoom.
+
+        Keyboard:
+            [p]     Pause
+            [r]     Reset View
+            [d]     Cycle through decimation values
+            [z]     Toggle point scaling
+            [c]     Toggle color source
+            [s]     Save PNG (./out.png)
+            [e]     Export points to ply (./out.ply)
+            [q\ESC] Quit
+        """
+        self.generate_window()
+        while True:
+            # Grab camera data
+            if not self.state.paused:
+                # Wait for a coherent pair of frames: depth and color
+                frames = self.pipe.wait_for_frames()
+
+                depth_frame = frames.get_depth_frame()
+                color_frame = frames.get_color_frame()
+
+                depth_frame = self.decimate.process(depth_frame)
+
+                # Grab new intrinsics (may be changed by decimation)
+                self.depth_intrinsics = rs.video_stream_profile(
+                    depth_frame.profile).get_intrinsics()
+                self.w, self.h = self.depth_intrinsics.width, self.depth_intrinsics.height
+
+                depth_image = np.asanyarray(depth_frame.get_data())
+                color_image = np.asanyarray(color_frame.get_data())
+
+                depth_colormap = np.asanyarray(
+                    self.colorizer.colorize(depth_frame).get_data())
+
+                if self.state.color:
+                    mapped_frame, color_source = color_frame, color_image
+                else:
+                    mapped_frame, color_source = depth_frame, depth_colormap
+
+                points = self.pc.calculate(depth_frame)
+                self.pc.map_to(mapped_frame)
+
+                # Pointcloud data to arrays
+                v, t = points.get_vertices(), points.get_texture_coordinates()
+                verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+                texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
+
+            # Render
+            now = time.time()
+
+            out.fill(0)
+
+            if 'axes' in draw:
+                axes(out, view(np.zeros((1, 3))), self.state.rotation, size=0.1, thickness=1)
+
+
+            if not self.state.scale or out.shape[:2] == (self.h, self.w):
+                pointcloud(out, verts, texcoords, color_source)
+            else:
+                tmp = np.zeros((self.h, self.w, 3), dtype=np.uint8)
+                pointcloud(tmp, verts, texcoords, color_source)
+                tmp = cv2.resize(
+                    tmp, out.shape[:2][::-1], interpolation=cv2.INTER_NEAREST)
+                np.putmask(out, tmp > 0, tmp)
+
+            # todo get grid to show est "driving plane"
+            if 'grid' in draw:
+                if path_planner:
+                    ground_pos = path_planner.ground_plane[0]  # Get new est center of plane
+                    ground_rot = path_planner.ground_plane[1]
+                    # axes(out, ground_pos, ground_rot, thickness=2)
+                    # line3d(out,ground_pos, path_planner.ground_plane[2],color=[0, 0, 255], thickness=3)
+                    grid(out, pos=ground_pos, rotation=ground_rot, size=1, n=15)
+                else:
+                    ground_pos = [self.state.offset[0],
+                                  self.state.offset[1] + Car.size[1] / 2 + Car.size[3],
+                                  self.state.offset[2] + 2]
+                    grid(out, pos=ground_pos, rotation=ground_rot, size=1, n=15)
+
+            # fixme get np.dot to work and hardcoded +2 offset
+            if 'car' in draw and Car:
+                car_model(out, pos=[self.state.offset[0], self.state.offset[1], self.state.offset[2] + 2], car_size=Car.size)
+
+            frustum(out, self.depth_intrinsics)
+
+            if any(self.state.mouse_btns):
+                axes(out, view(self.state.pivot), self.state.rotation, thickness=4)
+
+            dt = time.time() - now
+
+            if Blinde:
+                cv2.setWindowTitle(
+                    self.state.WIN_NAME, "FolkraceCar | Blind mode")
+            else:
+                try:
+                    cv2.setWindowTitle(
+                        self.state.WIN_NAME, "FolkraceCar | (%dx%d) %dFPS (%.2fms) %s" %
+                                        (self.w, self.h, 1.0 / dt, dt * 1000, "PAUSED" if self.state.paused else ""))
+                    cv2.putText(out, 'Key: [p] Pause '
+                                     '[r] Reset View '
+                                     '[d] Decimation '
+                                     '[z] Scaling '
+                                     '[c] Color '
+                                     '[s] Save PNG '
+                                     '[e] Export cloud', (5, 10), cv2.FONT_HERSHEY_COMPLEX, 0.37, (110, 250, 110), 1)
+                except:
+                    pass
+
+            cv2.imshow(self.state.WIN_NAME, out)
+            key = cv2.waitKey(1)
+
+            if key == ord("r"):
+                self.state.reset()
+
+            if key == ord("p"):
+                self.state.paused ^= True
+
+            if key == ord("d"):
+                self.state.decimate = (self.state.decimate + 1) % 3
+                self.decimate.set_option(rs.option.filter_magnitude, 2 ** self.state.decimate)
+
+            if key == ord("z"):
+                self.state.scale ^= True
+
+            if key == ord("c"):
+                self.state.color ^= True
+
+            if key == ord("s"):
+                cv2.imwrite('./out.png', out)
+
+            if key == ord("e"):
+                self.points.export_to_ply('./out.ply', mapped_frame)
+
+            if key in (27, ord("q")) or cv2.getWindowProperty(self.state.WIN_NAME, cv2.WND_PROP_AUTOSIZE) < 0:
+                break
+
+    def end(self):
+        self.pipe.stop()
+
 
 out = np.empty((frame_height, frame_width, 3), dtype=np.uint8)
 
-
-#state = AppState(Car.camera_offset)
 state = AppState(_camera_car_offset)
 
 def project(v):
@@ -203,6 +530,7 @@ def car_model(out, pos=None, car_size=None, rotation=np.eye(3), color=(0x40, 0x1
         car_size = [2, 1.5, 7.5]
 
     # Generate wheels
+    ## fixme bad simulation
     def wheel(side):
         iw = side
         radius = 0.05
@@ -240,11 +568,14 @@ def car_model(out, pos=None, car_size=None, rotation=np.eye(3), color=(0x40, 0x1
     side = np.sign(-view(pos + np.dot((x, 0, 0), rotation))[0]).astype(int)
     # fixme sidechange not considering width of car
     # Generate car
-    wheel(-side)
+    #wheel(-side)
     body()
-    wheel(side)
+    #wheel(side)
 
 
+"""
+Depricated original viewer
+"""
 def viewer(pipeline, Car, path_planner, camera=True, draw=None):
     """
     OpenCV and Numpy Point cloud Software Renderer
@@ -269,10 +600,6 @@ def viewer(pipeline, Car, path_planner, camera=True, draw=None):
         [e]     Export points to ply (./out.ply)
         [q\ESC] Quit
     """
-
-    if draw is None:  # Draw all
-        draw = ['car', 'grid', 'axes', 'frustum']
-
 
     try:
         if not camera:
@@ -469,6 +796,6 @@ def viewer(pipeline, Car, path_planner, camera=True, draw=None):
             break
 
 
-
     # Stop streaming
     if pc: pipeline.stop()
+
