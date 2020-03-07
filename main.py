@@ -275,14 +275,14 @@ def main():
 
             _t_fin = time.perf_counter()
 
-            if _t_last_print + .1 < time.perf_counter():
+            if _t_last_print + .05 < time.perf_counter():
                 _t_last_print = time.perf_counter()
                 _dt = _t_fin - _t_start
                 hz = 1/_dt
                 _fps = (0.9 * _fps + 0.1 * hz)
                 dist = (0.9 * dist + 0.1 * _max_dist)
                 opt_theta = round(0.9 * opt_theta + 0.1 * theta, 2)
-                print('Dist {}m | Theta  {}deg |  f: {}Hz'.format(round(dist, 2), opt_theta, round(_fps, 2)))
+                print('Dist {:4.2f}m | Theta  {:5.2f}deg |  f: {:5.2f}Hz'.format(round(dist, 2), opt_theta, round(_fps, 2)))
 
 
 
