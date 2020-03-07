@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="04d68977-1e9d-488f-9f49-be4a6b94078a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FolkraceCar.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FolkraceCar.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/module/ImageHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/module/ImageHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/module/PathPlanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/module/PathPlanner.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,10 +32,34 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/module" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/realsense_examples" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.idesettings.debugger.python" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="FolkraceCar" is-module-sdk="true">
+        <envs>
+          <env key="DISPLAY " value=" localhost:10.0" />
+        </envs>
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="FolkraceCar" />
+        <option name="myEnvs">
+          <map>
+            <entry key="DISPLAY " value=" localhost:10.0" />
+          </map>
+        </option>
+      </console-settings>
+    </option>
+  </component>
+  <component name="PyDebuggerOptionsProvider">
+    <option name="mySaveCallSignatures" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -58,7 +83,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.cuda_test">
+  <component name="RunManager" selected="Python.main">
     <configuration name="ImageHandler" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FolkraceCar" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -178,8 +203,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.cuda_test" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.cuda_test" />
         <item itemvalue="Python.ImageHandler" />
         <item itemvalue="Python.align-depth2color" />
         <item itemvalue="Python.depth_auto_calibration_example" />
@@ -205,7 +230,12 @@
       <workItem from="1582900483203" duration="11968000" />
       <workItem from="1582920596247" duration="27887000" />
       <workItem from="1583002476035" duration="5509000" />
-      <workItem from="1583060646882" duration="22745000" />
+      <workItem from="1583060646882" duration="27440000" />
+      <workItem from="1583159268725" duration="2113000" />
+      <workItem from="1583173637881" duration="4904000" />
+      <workItem from="1583494927306" duration="1010000" />
+      <workItem from="1583495953124" duration="16058000" />
+      <workItem from="1583527121613" duration="3699000" />
     </task>
     <servers />
   </component>
@@ -247,17 +277,12 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="pts[:, 1]" language="Python" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FolkraceCar$read_bag_example.coverage" NAME="read_bag_example Coverage Results" MODIFIED="1582396487656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$cuda_test.coverage" NAME="cuda_test Coverage Results" MODIFIED="1583091063469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FolkraceCar$export_ply_example.coverage" NAME="export_ply_example Coverage Results" MODIFIED="1582392725673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
-    <SUITE FILE_PATH="coverage/FolkraceCar$main.coverage" NAME="main Coverage Results" MODIFIED="1583090833965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FolkraceCar$main.coverage" NAME="main Coverage Results" MODIFIED="1583599509828" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FolkraceCar$pyglet_pointcloud_viewer.coverage" NAME="pyglet_pointcloud_viewer Coverage Results" MODIFIED="1582383620678" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$opencv_pointcloud_viewer.coverage" NAME="opencv_pointcloud_viewer Coverage Results" MODIFIED="1582414762388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples" />
     <SUITE FILE_PATH="coverage/FolkraceCar$EtherSenseClient.coverage" NAME="EtherSenseClient Coverage Results" MODIFIED="1582334672743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realsense_examples/ethernet_client_server" />

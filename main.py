@@ -8,35 +8,43 @@
 """
 TODO Convert PathPlanner thread to Multiprocessing and include image handling
     get camera init to work
-"""
-
-'''
-TODO
+    Implemet CUDA acceleration
     Fix zooming error
     split viewer function into
         Pointcloud handler
         Viewer
-'''
+"""
+
+import pyrealsense2 as rs
+import cv2
+import numpy as np
+import multiprocessing as mp
+_CUDA_MATH = False
+try:
+    import cupy as cp
+    _CUDA_MATH = True
+    print('Using CuPy for CUDA acceleration! :D')
+except Exception as err:
+    print(err)
+
 from module.ImageHandler import *
 from module.Folkracer import Folkracer
 from module.PathPlanner import PathPlanner
-import matplotlib as mpl
 
-mpl.use('Qt5Agg')
-from matplotlib import pyplot as plt
 
 import signal
 
-frame_width = 640
-frame_height = 480
-fps = 60
+frame_width = 424
+frame_height = 240
+fps = 0
+dfps = 90
 _camera_car_offset = [0.01, 0,
                       -2.05]  # The offset from camera to car pivot point. [w h l] # todo conv to understandable values?
 _car_size = [0.175, 0.1, 0.3, 0.05]  # [w h l r]
 blind = 0  # For debugging w/o camera
 
 
-def rs_init(width=640, height=480, fps=30):
+def rs_init(width=640, height=480, fps=0, dfps=0):
     """
     Setup function for Realsens pipe
     :param width: of camera stream
@@ -48,22 +56,21 @@ def rs_init(width=640, height=480, fps=30):
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
-    config.enable_stream(rs.stream.depth, width, height, rs.format.z16, fps)
-    config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+    if dfps > 0:
+        config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
+    if fps > 0:
+        config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
 
-    try:
-        # Start streaming
-        pipeline.start(config)
-    except Exception as err:
-        print(err)
+    # Start streaming
+    pipeline.start(config)
 
     return pipeline
 
 
-def disp(camera, holdtime=0):
+def disp(camera):
     run = True
     theta = 0  # Scanning direction, 0 = straight ahead
-    dtheta = 1  # Scanning step in degrees
+    dtheta = 5  # Scanning step in degrees
     x0 = [0, 0]
     d = 1.45
 
@@ -78,8 +85,7 @@ def disp(camera, holdtime=0):
     _fps = 30
     _plot_scale = frame_height/z_range[1]
     _scan_dir = 1
-    fig = plt.figure()
-    #plt.draw()
+
 
     def line(theta, r, x0):
         """
@@ -158,7 +164,7 @@ def disp(camera, holdtime=0):
             _t_last = _t_now
 
             #plot = np.ones((frame_height, frame_width, 3), np.uint8) * 215  # clear frame
-            plot = plot_pointcloud(points, 1, 1)
+            plot = plot_pointcloud(points, 1, 3)
 
             X, Y, Z = points[:, 0], points[:, 1], points[:, 2]
             y_inrange = np.where(np.logical_and(Y >= y_range[0], Y <= y_range[1]))
@@ -167,8 +173,9 @@ def disp(camera, holdtime=0):
             px, py = X[pts_inrange], Z[pts_inrange]
 
             if abs(theta) > np.deg2rad(theta_range/2):
-                _scan_dir = -_scan_dir
-            theta += np.deg2rad(dtheta)*_scan_dir
+                theta = np.deg2rad(-theta_range/2)
+            else:
+                theta += np.deg2rad(dtheta)
 
             pxi, pyi = inliers([X[pts_inrange], Z[pts_inrange]], theta, d, x0)
 
@@ -177,19 +184,22 @@ def disp(camera, holdtime=0):
             lc = line(theta, r, x0)
             lr = line(theta, r-0.1, np.add(x0, [dx, 0]))
 
-            plot = cv2.line(plot, ll[0], ll[1], (0, 0, 255), l_thickness)
+            """plot = cv2.line(plot, ll[0], ll[1], (0, 0, 255), l_thickness)
             plot = cv2.line(plot, lc[0], lc[1], (0, 255, 0), l_thickness)
-            plot = cv2.line(plot, lr[0], lr[1], (0, 0, 255), l_thickness)
+            plot = cv2.line(plot, lr[0], lr[1], (0, 0, 255), l_thickness)"""
 
             cv2.imshow(window_name, plot)
             _fps = round(0.99*_fps + 0.01 * hz, 1)  # some smoothening
             window_title = ('Depth Scan | Theta: {:5}deg | Fps: {:5.1f}Hz'.format(np.round(np.rad2deg(theta)), _fps))
             cv2.setWindowTitle(window_name, window_title)
-            #time.sleep(0.001)
+            time.sleep(0.001)
 
 
             if cv2.waitKey(1) in (27, ord("q")):
                 run = False  # esc to quit
+
+            print(_fps)
+
 
 
         except KeyboardInterrupt:
@@ -202,25 +212,25 @@ def main():
     :return: None
     """
     # initialize Realsense Camera
-    camera = Camera(rs_init(frame_width, frame_height, fps))
+    camera = Camera(rs_init(frame_width, frame_height, fps, dfps))
 
     # Creat Car object and Path planner
-    Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
-    pp = PathPlanner(Camera=camera)
+    #Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
+    #pp = PathPlanner(Camera=camera)
 
     # Start threads
     # Car.start()
     # pp.start()
 
-    # camera.visualizer(['pointcloud', 'frustum', 'axes', 'no-grid', 'car'], Car=Car, path_planner=pp)
     try:
+
         disp(camera)
 
     except KeyboardInterrupt:
         pass
     # Finish, close Car handler, Path planner and stream
-    Car.end()
-    pp.end()
+    #Car.end()
+    #pp.end()
     camera.end()
     print('Main process have ended')
     exit(0)
