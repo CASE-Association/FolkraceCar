@@ -22,6 +22,7 @@ import multiprocessing as mp
 from module.ImageHandler import *
 from module.Folkracer import Folkracer
 from module.PathPlanner import PathPlanner
+from module.SharedVars import *
 import time
 
 import signal
@@ -238,51 +239,41 @@ def main():
 
     #   Car is the process handling the dynamics of the car
     Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
-    pp = PathPlanner(Camera=camera)
+    pp = PathPlanner(Camera=camera, Car=Car)
 
     # Start threads
     # Car.start()
-    # pp.start()
+    pp.start()
+    time.sleep(1)
 
     hz = 0
     _fps = 30
     _phi = 0.0
     theta = 0.0
     opt_theta = 0.0
+    opt_phi = 0.0
     run = True
     _t_last_print = 0
-    camera.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
+    dist = 0
     try:
-        dist = 0
+
+
+
         while run:
-            _t_start = time.perf_counter()
-
-            tunnel_size = Car.size[0:2]
-            verts = camera.get_verts()
-
-            _max_dist = 0
-            for _theta in range(int(opt_theta-25), int(opt_theta + 26), 10):
-
-                inliers = pp.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=_phi)
-
-                if inliers.any():
-                    Z = inliers[:, 2]
-                    _dist = np.min(Z)
-                    if _dist > _max_dist * 1.1:  # Must be more than 10 grater
-                        theta = _theta
-                        _max_dist = _dist
 
 
-            _t_fin = time.perf_counter()
+            msg = pp.q.get()
+            _max_dist, theta = msg.get('dist', -1), msg.get('theta', 0.0)
 
-            if _t_last_print + .05 < time.perf_counter():
+
+            if _t_last_print + 0.05 < time.perf_counter():
                 _t_last_print = time.perf_counter()
-                _dt = _t_fin - _t_start
-                hz = 1/_dt
+                hz = msg.get('rate', 0)
                 _fps = (0.9 * _fps + 0.1 * hz)
                 dist = (0.9 * dist + 0.1 * _max_dist)
-                opt_theta = round(0.9 * opt_theta + 0.1 * theta, 2)
-                print('Dist {:4.2f}m | Theta  {:5.2f}deg |  f: {:5.2f}Hz'.format(round(dist, 2), opt_theta, round(_fps, 2)))
+                opt_theta = round(0.9 * opt_theta + 0.1 * theta, 1)
+                print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
+                      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
 
 
 
@@ -291,9 +282,10 @@ def main():
     # Finish, close Car handler, Path planner and stream
     # Car.end()
     pp.end()
+    #pp.join()
     camera.end()
-    print('Main process have ended')
-    exit(0)
+    print('\n\033[92m Main process ended\033[0m')
+    #exit(0)
 
 
 if __name__ == '__main__':

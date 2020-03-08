@@ -17,35 +17,60 @@ except Exception as err:
 from numpy.linalg import svd, det
 import time
 import threading as mt
+import multiprocessing as mp
 from module.ImageHandler import *
 
 
 # todo migrate from multithread to multiprocessing
 class PathPlanner:
-    def __init__(self, Camera):
+    def __init__(self, Camera, Car):
         """
         Gradient decent solving path planner ## todo Evaluate against other methods of path planning
         :param Car: Object to give driving vector
         """
         self.cam = Camera
+        self.cam.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
+        self.car = Car
         self.running = False
 
         self.points = np.transpose(self.cam.get_verts())  # todo fix some function to call instead
         self.ground_plane = self._get_ground_plane()
 
-        self.path_vector = self.get_path()
+        # Direction variables
+        self.theta = 0.0
+        self.phi = 0.0
+        self.dist = -1.0
+        self.last_reading = 0.0
+        self.samplerate = 0.0
+        self.fov = 50
+        self.q = mp.Queue()
+
+        self.pp = None
+
+        #self.path_vector = self.get_path()
 
     def start(self):
         self.running = True
-        path_plan = mt.Thread(target=self.path_plan, name='path_planner')
+        #path_plan = mt.Thread(target=self.path_plan, name='path_planner')
+        self.pp = mp.Process(target=self.path_plan, name='path_planner', args=(self.q,))
         try:
-            path_plan.start()
+           self.pp.start()
         except Exception as err:
             print("Error: unable to start path_planner thread, err: {}".format(err))
-        return path_plan
+        return self.pp
 
     def end(self):
-        self.running = False
+        if self.running:
+            self.q.put("END")
+            self.pp.join(timeout=1)
+            self.q.close()
+            self.q.join_thread()
+            if self.running:
+                self.pp.terminate()
+                print('\n\033[91m Path planner terminated\033[0m')
+            else:
+                print('\n\033[92m Path planner ended\033[0m')
+
 
     def _rigid_transform_3D(self, A, B):
             assert len(A) == len(B)
@@ -181,23 +206,46 @@ class PathPlanner:
 
         return p[I]
 
-    def get_path(self):
-        pass
-        '''
-        h = [0, 100]  # Heightspan of interset
+    def _get_path(self):
+        theta = None
+        tunnel_size = self.car.size[0:2]
+        verts = self.cam.get_verts()
 
-        for p in self.points:
-            if h[0] <= p[1] <= h[1]:
+        _max_dist = 0
+        for _theta in range(int(self.theta - self.fov/2), int(self.theta + self.fov/2 + 1), 5):
 
-        self.path_vector = [0, 0]        
-        '''
-        return [0, 0]
+            inliers = self.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=self.phi)
 
+            if inliers.any():
+                Z = inliers[:, 2]
+                _dist = np.min(Z)
+                if _dist > _max_dist * 1.1:  # Must be more than 10 grater
+                    theta = _theta
+                    _max_dist = _dist
 
-    def path_plan(self):
+        if theta:
+            return _max_dist, theta
+        return 0.0, theta
+
+    def path_plan(self, q):
+        rx_msg = []
         while self.running:
-            self.points = self.process_cloud()
+            """try:
+                rx_msg = q.get(block=False)
+                if "END" in rx_msg:
+                    self.running = False
+                    return
+            except Exception as err:
+                pass
+                #print(err)"""
             self.ground_plane = self._get_ground_plane()
-            time.sleep(0.1)
+            #self.dist, self.theta = self._get_path()
+            _t_now = time.perf_counter()
+            self.samplerate = 1 / (_t_now - self.last_reading)
+            self.last_reading = _t_now
+            tx_msg = {'dist': self.dist, 'rate': self.samplerate, 'theta': self.theta}
+            q.put(tx_msg)  # send data as Queue message
 
-        print('Path planner ended')
+
+
+
