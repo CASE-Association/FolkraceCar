@@ -19,9 +19,9 @@ import time
 import threading as mt
 import multiprocessing as mp
 from module.ImageHandler import *
+import numpy as np
 
 
-# todo migrate from multithread to multiprocessing
 class PathPlanner:
     def __init__(self, Camera, Car):
         """
@@ -32,29 +32,30 @@ class PathPlanner:
         self.cam.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
         self.car = Car
         self.running = False
+        self.points = []
 
         self.points = np.transpose(self.cam.get_verts())  # todo fix some function to call instead
         self.ground_plane = self._get_ground_plane()
 
-        # Direction variables
-        self.theta = 0.0
-        self.phi = 0.0
-        self.dist = -1.0
-        self.last_reading = 0.0
+        # Path planning variables
+        self.theta = 0.0            # steering direction
+        self.phi = 0.0              # incline angle
+        self.dist = -1.0            # distance to object
+        self.last_reading = 0.0     # last valid reading
         self.samplerate = 0.0
-        self.fov = 50
-        self.q = mp.Queue()
+        self.fov = 50               # FieldOfView
+        self.q = mp.Queue()         # message queue
 
-        self.pp = None
+        self.PP = None
 
         #self.path_vector = self.get_path()
 
-    def start(self):
+    """def start(self):
         self.running = True
         #path_plan = mt.Thread(target=self.path_plan, name='path_planner')
-        self.pp = mp.Process(target=self.path_plan, name='path_planner', args=(self.q,))
+        self.PP = mp.Process(target=self.path_plan, name='path_planner', args=(self.q,))
         try:
-           self.pp.start()
+           self.PP.start()
         except Exception as err:
             print("Error: unable to start path_planner thread, err: {}".format(err))
         return self.pp
@@ -69,8 +70,7 @@ class PathPlanner:
                 self.pp.terminate()
                 print('\n\033[91m Path planner terminated\033[0m')
             else:
-                print('\n\033[92m Path planner ended\033[0m')
-
+                print('\n\033[92m Path planner ended\033[0m')"""
 
     def _rigid_transform_3D(self, A, B):
             assert len(A) == len(B)
@@ -227,24 +227,61 @@ class PathPlanner:
             return _max_dist, theta
         return 0.0, theta
 
-    def path_plan(self, q):
-        rx_msg = []
-        while self.running:
-            """try:
-                rx_msg = q.get(block=False)
-                if "END" in rx_msg:
-                    self.running = False
-                    return
-            except Exception as err:
-                pass
-                #print(err)"""
-            self.ground_plane = self._get_ground_plane()
-            #self.dist, self.theta = self._get_path()
-            _t_now = time.perf_counter()
-            self.samplerate = 1 / (_t_now - self.last_reading)
-            self.last_reading = _t_now
-            tx_msg = {'dist': self.dist, 'rate': self.samplerate, 'theta': self.theta}
-            q.put(tx_msg)  # send data as Queue message
+
+def init_pipe(width=640, height=480, fps=0, dfps=0):
+    """
+    Setup function for Realsens pipe
+    :param width: of camera stream
+    :param height: of camera stream
+    :param fps: of camera stream
+    :return: created pipeline
+    """
+
+    # Configure depth and color streams
+    pipeline = rs.pipeline()
+    config = rs.config()
+    if dfps > 0:
+        config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
+    if fps > 0:
+        config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+
+    # Start streaming
+    pipeline.start(config)
+
+    return pipeline
+
+
+def path_plan(car, q):
+    rx_msg = []
+    from module.ImageHandler import Camera
+    from main import frame_width, frame_height, fps, dfps
+
+    pipe = init_pipe(frame_width, frame_height, fps, dfps)
+    cam = Camera(pipe)
+    pp = PathPlanner(cam, car)
+    run = True
+    while run:
+        try:
+            rx_msg = q.get(block=False)
+            if "END" in rx_msg:
+                run = False
+                break
+        except Exception as err:
+            pass
+        pp.ground_plane = pp._get_ground_plane()
+        pp.dist, pp.theta = pp._get_path()
+        _t_now = time.perf_counter()
+        pp.samplerate = 1 / (_t_now - pp.last_reading)
+        pp.last_reading = _t_now
+        tx_msg = {'dist': pp.dist, 'rate': pp.samplerate, 'theta': pp.theta, 'ground': pp.ground_plane}
+        q.put(tx_msg)  # send data as Queue message
+
+    cam.end()
+    q.close()
+    q.join_thread()
+    print('ex')
+
+
 
 
 

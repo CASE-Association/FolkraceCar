@@ -21,7 +21,7 @@ import numpy as np
 import multiprocessing as mp
 from module.ImageHandler import *
 from module.Folkracer import Folkracer
-from module.PathPlanner import PathPlanner
+from module.PathPlanner import *
 from module.SharedVars import *
 import time
 
@@ -233,17 +233,20 @@ def main():
     :return: None
     """
     # initialize Realsense Camera
-    camera = Camera(rs_init(frame_width, frame_height, fps, dfps))
+    #camera = Camera(rs_init(frame_width, frame_height, fps, dfps))
 
     # Creat Car object and Path planner
 
     #   Car is the process handling the dynamics of the car
-    Car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
-    pp = PathPlanner(Camera=camera, Car=Car)
+    car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
 
+    q = mp.Queue()
+    PP = mp.Process(target=path_plan, args=(car, q), name='path_planners')
     # Start threads
     # Car.start()
-    pp.start()
+    # run the path planner as daemon so it terminates with the main process
+    PP.daemon = True
+    PP.start()
     time.sleep(1)
 
     hz = 0
@@ -262,7 +265,7 @@ def main():
         while run:
 
 
-            msg = pp.q.get()
+            msg = q.get()
             _max_dist, theta = msg.get('dist', -1), msg.get('theta', 0.0)
 
 
@@ -279,13 +282,17 @@ def main():
 
     except KeyboardInterrupt:
         pass
-    # Finish, close Car handler, Path planner and stream
-    # Car.end()
-    pp.end()
-    #pp.join()
-    camera.end()
+
+
+    # Cleanup
+
+    car.end()  # end car thread
+    q.put("END")  # send END msg to shutdown child processes
+    q.close()
+    q.join_thread()
+    #PP.terminate()  # PP.join()  # fixme unable to join child process.
+    print('\n\033[92m Path planner ended\033[0m')
     print('\n\033[92m Main process ended\033[0m')
-    #exit(0)
 
 
 if __name__ == '__main__':
