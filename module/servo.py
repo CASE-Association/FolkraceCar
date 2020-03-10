@@ -15,6 +15,9 @@ sudo busybox devmem 0x6000d100 32 0x00
 
 import Jetson.GPIO as GPIO
 import time
+import os
+
+os.system('sudo ./module/enable_pwm.sh')  # Enable PWM on pin 32 and 33  # fixme
 
 steer_servoPIN = 32
 speed_servoPIN = 33
@@ -22,8 +25,8 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(steer_servoPIN, GPIO.OUT)
 GPIO.setup(speed_servoPIN, GPIO.OUT)
 
-servo_steer = GPIO.PWM(steer_servoPIN, 50)  # GPIO for PWM with 50Hz
-servo_speed = GPIO.PWM(speed_servoPIN, 50)  # GPIO for PWM with 50Hz
+servo_steer = GPIO.PWM(steer_servoPIN, 50)  # GPIO for PWM with 50Hz = 20ms
+servo_speed = GPIO.PWM(speed_servoPIN, 50)  # GPIO for PWM with 50Hz = 20ms
 servo_steer.start(5)  # Initialization
 servo_speed.start(5)  # Initialization
 servo = [servo_speed, servo_steer]
