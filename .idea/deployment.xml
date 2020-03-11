@@ -9,6 +9,7 @@
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/Arduino" />
+            <excludedPath local="true" path="$PROJECT_DIR$/realsense_examples" />
           </excludedPaths>
         </serverdata>
       </paths>

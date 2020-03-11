@@ -101,6 +101,7 @@ class Servo:
 
         self._frequency = self._check_valid_frequency(frequency)
 
+        GPIO.setwarnings(False)
         GPIO.setmode(self._pin_mode)
         GPIO.setup(self._pin, GPIO.OUT)
 
@@ -148,12 +149,11 @@ class Servo:
 
     def _check_valid_frequency(self, frequency):
         if self._no_checks:
-            return True
+            return frequency
         vrange = self._freq_range
         if frequency is None or not vrange[0] <= frequency <= vrange[1]:
-            print('Invalid frequency!\n Valid range [{}]'.format(vrange))
-            return False
-        return True
+            raise Exception('Invalid frequency!\n Valid range [{}]'.format(vrange))
+        return frequency
 
     def _check_valid_duty_cycle(self, duty_cycle):
         vrange = self._dc_range
