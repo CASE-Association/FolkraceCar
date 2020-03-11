@@ -187,13 +187,17 @@ class Servo:
         raise Exception(('Invalid pin!\nValid pins: {}'.format(self._valid_pins)))
 
 
+def GPIO_cleanup():
+    GPIO.cleanup()
+
+
 def main():
     servo1 = Servo(pin=32)
     servo2 = Servo(pin=33)
     servo1.init()
     servo2.init()
     try:
-        print('Servo test started')
+        print('\n\033[92m Servo test started\033[0m')
         while True:
             for ang in range(-70, 120, 10):  # todo set proper limits
                 servo1.set_angle(ang)
@@ -205,7 +209,7 @@ def main():
         servo1.stop()
         servo2.stop()
         GPIO.cleanup()
-        print('\nServo test ended')
+        print('\n\033[92m Servo test ended\033[0m')
 
 
 if __name__ == '__main__':

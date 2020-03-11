@@ -207,7 +207,7 @@ class PathPlanner:
         return p[I]
 
     def _get_path(self):
-        theta = None
+        theta = 0.0
         tunnel_size = self.car.size[0:2]
         verts = self.cam.get_verts()
 
@@ -219,18 +219,18 @@ class PathPlanner:
             if inliers.any():
                 Z = inliers[:, 2]
                 _dist = np.min(Z)
-                if _dist > _max_dist * 1.1:  # Must be more than 10 grater
+                if _dist > _max_dist * 1.1:  # Must be more than 10% longer
                     theta = _theta
                     _max_dist = _dist
 
-        if theta:
+        if theta is not None:
             return _max_dist, theta
         return 0.0, theta
 
 
 def init_pipe(width=640, height=480, fps=0, dfps=0):
     """
-    Setup function for Realsens pipe
+    Setup function for Realsense pipe
     :param width: of camera stream
     :param height: of camera stream
     :param fps: of camera stream

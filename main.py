@@ -23,6 +23,7 @@ from module.ImageHandler import *
 from module.Folkracer import Folkracer
 from module.PathPlanner import *
 from module.SharedVars import *
+from module.servo import *
 import time
 
 import signal
@@ -240,6 +241,13 @@ def main():
     #   Car is the process handling the dynamics of the car
     car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
 
+    #   Actuatur initialization
+    steer_servo = Servo(32, no_checks=True)
+    speed_servo = Servo(33, no_checks=False)
+    steer_servo.init()
+    speed_servo.init()
+    speed_servo.set_angle(0)
+
     q = mp.Queue()
     PP = mp.Process(target=path_plan, args=(car, q), name='path_planners')
     # Start threads
@@ -258,6 +266,8 @@ def main():
     run = True
     _t_last_print = 0
     dist = 0
+
+    _max_speed = 180  # range [0 180]
     try:
 
 
@@ -275,8 +285,14 @@ def main():
                 _fps = (0.9 * _fps + 0.1 * hz)
                 dist = (0.9 * dist + 0.1 * _max_dist)
                 opt_theta = round(0.9 * opt_theta + 0.1 * theta, 1)
-                print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
-                      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
+                #print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
+                #      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
+
+                speed = max(min(_max_speed, (3*dist-1) ** 2), -_max_speed)  # crude speed setup
+                print(speed)
+                steer = theta*2.5
+                speed_servo.set_angle(speed)
+                steer_servo.set_angle(steer)
 
 
 
@@ -290,6 +306,10 @@ def main():
     q.put("END")  # send END msg to shutdown child processes
     q.close()
     q.join_thread()
+    steer_servo.stop()
+    speed_servo.stop()
+    GPIO_cleanup()
+
     #PP.terminate()  # PP.join()  # fixme unable to join child process.
     print('\n\033[92m Path planner ended\033[0m')
     print('\n\033[92m Main process ended\033[0m')
