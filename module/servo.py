@@ -101,7 +101,7 @@ class Servo:
 
         self._frequency = self._check_valid_frequency(frequency)
 
-        GPIO.setwarnings(False)
+        #GPIO.setwarnings(False)
         GPIO.setmode(self._pin_mode)
         GPIO.setup(self._pin, GPIO.OUT)
 
@@ -199,11 +199,11 @@ def main():
     try:
         print('\n\033[92m Servo test started\033[0m')
         while True:
-            for ang in range(-70, 120, 10):  # todo set proper limits
+            for ang in range(-15, 15, 5):  # todo set proper limits
                 servo1.set_angle(ang)
                 servo2.set_angle(ang)
                 print(servo1.Angle, servo1.Frequency, servo1.DutyCycle)
-                time.sleep(0.5)
+                time.sleep(1)
 
     except KeyboardInterrupt:
         servo1.stop()

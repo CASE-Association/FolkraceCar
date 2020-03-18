@@ -285,11 +285,11 @@ def main():
                 _fps = (0.9 * _fps + 0.1 * hz)
                 dist = (0.9 * dist + 0.1 * _max_dist)
                 opt_theta = round(0.9 * opt_theta + 0.1 * theta, 1)
-                #print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
-                #      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
+                print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
+                      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
 
                 speed = max(min(_max_speed, (3*dist-1) ** 2), -_max_speed)  # crude speed setup
-                print(speed)
+                #print(speed)
                 steer = theta*2.5
                 speed_servo.set_angle(speed)
                 steer_servo.set_angle(steer)

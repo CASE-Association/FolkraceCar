@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="'Nano'" deleteMissingItems="true" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;*.hprof;*.pyc;/">
+  <component name="PublishConfigData" autoUpload="Always" serverName="nano1@nano1:22" deleteMissingItems="true" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;*.hprof;*.pyc;/">
     <serverData>
       <paths name="'Nano'">
         <serverdata>
@@ -17,6 +17,13 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="nano1@nano1:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/nano1/CASE" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
