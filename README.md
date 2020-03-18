@@ -10,8 +10,8 @@
 - Weight optimization
 
 ## Placeholder
-<img src="out.png" width="45%" />
-<img src="Arduino/images/front.JPG" width="45%" />
+
+![out](img/out.png)
 
 ## System overview
 
