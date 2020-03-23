@@ -13,7 +13,7 @@ sudo busybox devmem 0x6000d100 32 0x00
 
 """
 
-import Jetson.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import os
 
@@ -132,8 +132,6 @@ class Servo:
 
         self._angle = self._check_valid_ang(angle)
 
-        #dc = round(2.5 + (ang + 90) / 18, 1)  # dutycycle range ~[2.5, 12.5]
-
         ang_lb = self.angle_range[0]
         ang_ub = self.angle_range[1]
         ang_delta = ang_ub - ang_lb
@@ -193,21 +191,21 @@ def GPIO_cleanup():
 
 def main():
     servo1 = Servo(pin=32)
-    servo2 = Servo(pin=33)
+    #servo2 = Servo(pin=33)
     servo1.init()
-    servo2.init()
+    #servo2.init()
     try:
         print('\n\033[92m Servo test started\033[0m')
         while True:
-            for ang in range(-15, 15, 5):  # todo set proper limits
+            for ang in range(-85, 45, 10):  # todo set proper limits
                 servo1.set_angle(ang)
-                servo2.set_angle(ang)
+                #servo2.set_angle(ang)
                 print(servo1.Angle, servo1.Frequency, servo1.DutyCycle)
                 time.sleep(1)
 
     except KeyboardInterrupt:
         servo1.stop()
-        servo2.stop()
+        #servo2.stop()
         GPIO.cleanup()
         print('\n\033[92m Servo test ended\033[0m')
 

@@ -1,11 +1,12 @@
-import cv2.load_config_py3
+#import cv2.load_config_py3
 import cv2
 import math
 import time
 import pyrealsense2 as rs
 import numpy as np
 
-from main import _camera_car_offset, frame_height, frame_width
+from main import camera_car_offset, frame_height, frame_width
+
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):
@@ -377,7 +378,7 @@ class Camera:
 
 out = np.empty((frame_height, frame_width, 3), dtype=np.uint8)
 
-state = AppState(_camera_car_offset)
+state = AppState(camera_car_offset)
 
 def project(v):
     """project 3d vector array to 2d"""

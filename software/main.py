@@ -1,20 +1,17 @@
-## This is Code developed by the CASE Assosiation, built on code and examples
-## from Inel Corporation.
+"""
+## This is Code developed by the CASE Association, built on code and examples
+## from Intel Corporation.
 ## License: MIT See LICENSE file in root directory.
 ## Modifications Copyright (c) 2020 CASE (Chalmers Autonomous Systems and Electronics)
 ## License: Apache 2.0. See LICENSE file in root directory.
 ## Copyright(c) 2015-2017 Intel Corporation. All Rights Reserved.
 
+TODO
+    Get pyrealsense2 mapping to work
+    Gwt ADC to work
+    Get rpm input to work
+    hw test
 """
-TODO Convert PathPlanner thread to Multiprocessing and include image handling
-    get camera init to work
-    Implemet CUDA acceleration
-    Fix zooming error
-    split viewer function into
-        Pointcloud handler
-        Viewer
-"""
-
 import pyrealsense2 as rs
 import cv2
 import numpy as np
@@ -26,39 +23,13 @@ from module.SharedVars import *
 from module.servo import *
 import time
 
-import signal
-
 frame_width = 424
 frame_height = 240
 fps = 0
 dfps = 90
-_camera_car_offset = [0.01, 0,
-                      -2.05]  # The offset from camera to car pivot point. [w h l] # todo conv to understandable values?
+camera_car_offset = [0.01, 0,
+                     -2.05]  # The offset from camera to car pivot point. [w h l] # todo conv to understandable values?
 _car_size = [0.2, 0.1, 0.3, 0.05]  # [w h l r]
-blind = 0  # For debugging w/o camera
-
-
-def rs_init(width=640, height=480, fps=0, dfps=0):
-    """
-    Setup function for Realsens pipe
-    :param width: of camera stream
-    :param height: of camera stream
-    :param fps: of camera stream
-    :return: created pipeline
-    """
-
-    # Configure depth and color streams
-    pipeline = rs.pipeline()
-    config = rs.config()
-    if dfps > 0:
-        config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
-    if fps > 0:
-        config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
-
-    # Start streaming
-    pipeline.start(config)
-
-    return pipeline
 
 
 def disp(camera, run=True):
@@ -233,13 +204,11 @@ def main():
     Main Folkrace function
     :return: None
     """
-    # initialize Realsense Camera
-    #camera = Camera(rs_init(frame_width, frame_height, fps, dfps))
 
     # Creat Car object and Path planner
 
     #   Car is the process handling the dynamics of the car
-    car = Folkracer(car_size=_car_size, camera_car_offset=_camera_car_offset)
+    car = Folkracer(car_size=_car_size, camera_car_offset=camera_car_offset)
 
     #   Actuatur initialization
     steer_servo = Servo(32, no_checks=True)
@@ -264,53 +233,50 @@ def main():
     opt_theta = 0.0
     opt_phi = 0.0
     run = True
-    _t_last_print = 0
     dist = 0
-
+    _t_last_reading = 0.0
+    _t_last_update = 0.0
     _max_speed = 180  # range [0 180]
     try:
 
-
-
         while run:
-
 
             msg = q.get()
             _max_dist, theta = msg.get('dist', -1), msg.get('theta', 0.0)
 
+            _t_new_reading = msg.get('last_reading', 0)
+            hz = 1/(_t_new_reading - _t_last_reading )
+            _t_last_reading = _t_new_reading
+            #hz = msg.get('rate', 0)
+            _fps = (0.9 * _fps + 0.1 * hz)
+            dist = (0.9 * dist + 0.1 * _max_dist)
+            opt_theta = round(0.99 * opt_theta + 0.01 * theta, 1)
 
-            if _t_last_print + 0.05 < time.perf_counter():
-                _t_last_print = time.perf_counter()
-                hz = msg.get('rate', 0)
-                _fps = (0.9 * _fps + 0.1 * hz)
-                dist = (0.9 * dist + 0.1 * _max_dist)
-                opt_theta = round(0.9 * opt_theta + 0.1 * theta, 1)
+            if _t_last_update + 0.05 < time.perf_counter():
                 print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
                       .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
 
-                speed = max(min(_max_speed, (3*dist-1) ** 2), -_max_speed)  # crude speed setup
-                #print(speed)
-                steer = theta*2.5
+                speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
+                # print(speed)
+                steer = theta * 2.5
                 speed_servo.set_angle(speed)
                 steer_servo.set_angle(steer)
-
-
+                _t_last_update = time.perf_counter()
 
     except KeyboardInterrupt:
         pass
-
 
     # Cleanup
 
     car.end()  # end car thread
     q.put("END")  # send END msg to shutdown child processes
-    q.close()
+    q.close()  # check if queue get empty
     q.join_thread()
     steer_servo.stop()
     speed_servo.stop()
     GPIO_cleanup()
+    PP.join(timeout=1)  # fixme unable to join child process.
 
-    #PP.terminate()  # PP.join()  # fixme unable to join child process.
     print('\n\033[92m Path planner ended\033[0m')
     print('\n\033[92m Main process ended\033[0m')
 

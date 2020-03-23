@@ -1,18 +1,6 @@
 from typing import Union
 
-import pyrealsense2 as rs
-from cupy.core.core import ndarray
-from numpy.core._multiarray_umath import ndarray
-
-"""_CUDA = False
-try:
-    import cupy as cp
-    _CUDA = True
-    print('Using CuPy for CUDA acceleration! :D')
-except Exception as err:
-    print(err)
-    import numpy as cp
-    print('CuPy unsuported, Using Numpy as cp replacement :(')"""
+import module.pyrealsense2 as rs
 
 from numpy.linalg import svd, det
 import time
@@ -20,6 +8,7 @@ import threading as mt
 import multiprocessing as mp
 from module.ImageHandler import *
 import numpy as np
+import sys
 
 
 class PathPlanner:
@@ -38,17 +27,17 @@ class PathPlanner:
         self.ground_plane = self._get_ground_plane()
 
         # Path planning variables
-        self.theta = 0.0            # steering direction
-        self.phi = 0.0              # incline angle
-        self.dist = -1.0            # distance to object
-        self.last_reading = 0.0     # last valid reading
+        self.theta = 0.0  # steering direction
+        self.phi = 0.0  # incline angle
+        self.dist = -1.0  # distance to object
+        self.last_reading = 0.0  # last valid reading
         self.samplerate = 0.0
-        self.fov = 50               # FieldOfView
-        self.q = mp.Queue()         # message queue
+        self.fov = 50  # FieldOfView
+        self.q = mp.Queue()  # message queue
 
         self.PP = None
 
-        #self.path_vector = self.get_path()
+        # self.path_vector = self.get_path()
 
     """def start(self):
         self.running = True
@@ -73,32 +62,32 @@ class PathPlanner:
                 print('\n\033[92m Path planner ended\033[0m')"""
 
     def _rigid_transform_3D(self, A, B):
-            assert len(A) == len(B)
+        assert len(A) == len(B)
 
-            N = A.shape[0]  # total points
+        N = A.shape[0]  # total points
 
-            centroid_A = np.mean(A, axis=0)
-            centroid_B = np.mean(B, axis=0)
+        centroid_A = np.mean(A, axis=0)
+        centroid_B = np.mean(B, axis=0)
 
-            # centre the points
-            AA = A - np.tile(centroid_A, (N, 1))
-            BB = B - np.tile(centroid_B, (N, 1))
+        # centre the points
+        AA = A - np.tile(centroid_A, (N, 1))
+        BB = B - np.tile(centroid_B, (N, 1))
 
-            # dot is matrix multiplication for array
-            H = np.transpose(AA) * BB
+        # dot is matrix multiplication for array
+        H = np.transpose(AA) * BB
 
-            U, S, Vt = svd(H)
+        U, S, Vt = svd(H)
 
+        R = Vt.T * U.T
+
+        # special reflection case
+        if det(R) < 0:
+            Vt[2, :] *= -1
             R = Vt.T * U.T
 
-            # special reflection case
-            if det(R) < 0:
-                Vt[2, :] *= -1
-                R = Vt.T * U.T
+        t = -R * centroid_A.T + centroid_B.T
 
-            t = -R * centroid_A.T + centroid_B.T
-
-            return R, t
+        return R, t
 
     def _get_ground_plane(self):
         """
@@ -152,7 +141,7 @@ class PathPlanner:
         #  implement as cp
         #  driving plane
 
-        #p = cp.asanyarray(verts)
+        # p = cp.asanyarray(verts)
         p = verts
 
         X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
@@ -203,7 +192,6 @@ class PathPlanner:
         # Pop outliers from I
         I = I[I_x]
 
-
         return p[I]
 
     def _get_path(self):
@@ -212,7 +200,7 @@ class PathPlanner:
         verts = self.cam.get_verts()
 
         _max_dist = 0
-        for _theta in range(int(self.theta - self.fov/2), int(self.theta + self.fov/2 + 1), 5):
+        for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), 5):
 
             inliers = self.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=self.phi)
 
@@ -236,17 +224,20 @@ def init_pipe(width=640, height=480, fps=0, dfps=0):
     :param fps: of camera stream
     :return: created pipeline
     """
-
     # Configure depth and color streams
-    pipeline = rs.pipeline()
-    config = rs.config()
-    if dfps > 0:
-        config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
-    if fps > 0:
-        config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+    try:
+        pipeline = rs.pipeline()
+        config = rs.config()
+        if dfps > 0:
+            config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
+        if fps > 0:
+            config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
 
-    # Start streaming
-    pipeline.start(config)
+        # Start streaming
+        pipeline.start(config)
+    except RuntimeError as err:
+        print(err)
+        sys.exit()  # todo fix propper exit
 
     return pipeline
 
@@ -273,16 +264,14 @@ def path_plan(car, q):
         _t_now = time.perf_counter()
         pp.samplerate = 1 / (_t_now - pp.last_reading)
         pp.last_reading = _t_now
-        tx_msg = {'dist': pp.dist, 'rate': pp.samplerate, 'theta': pp.theta, 'ground': pp.ground_plane}
+        tx_msg = {'dist': pp.dist,
+                  'rate': pp.samplerate,
+                  'theta': pp.theta,
+                  'ground': pp.ground_plane,
+                  'last_reading': pp.last_reading}
         q.put(tx_msg)  # send data as Queue message
 
     cam.end()
     q.close()
     q.join_thread()
     print('ex')
-
-
-
-
-
-
