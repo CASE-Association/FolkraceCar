@@ -253,8 +253,14 @@ def main():
             opt_theta = round(0.99 * opt_theta + 0.01 * theta, 1)
 
             if _t_last_update + 0.05 < time.perf_counter():
+                os.system('clear')
+                print('\n\033[92m                 CASE FolkRacer\033[0m')
                 print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
                       .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
+                _turn = min(max(round(theta), -25), 25)
+                print('|'*(25+_turn), '\033[92mA\033[0m', '|'*(25-_turn))
+                print('Speed: 00.0')
+                print('\nCtrl-C to end')
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
                 # print(speed)

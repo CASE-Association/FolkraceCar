@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import pyrealsense2 as rs
+#import pyrealsense2 as rs
 import sys, getopt
 import asyncore
 import numpy as np

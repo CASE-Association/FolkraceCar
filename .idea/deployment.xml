@@ -35,9 +35,6 @@
           <mappings>
             <mapping deploy="/CASE" local="$PROJECT_DIR$" />
           </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/software/realsense_examples" />
-          </excludedPaths>
         </serverdata>
       </paths>
       <paths name="pi@192.168.1.32:22">
