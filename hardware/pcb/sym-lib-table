@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name DCDC)(type Legacy)(uri C:/Users/drago/Documents/GitHub/FolkraceCar/hardware/pcb/lib/SamacSys_Parts.lib)(options "")(descr ""))
+)
