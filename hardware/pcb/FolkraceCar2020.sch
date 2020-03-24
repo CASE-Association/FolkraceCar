@@ -4,7 +4,7 @@ EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
-Title "Folkrace Car 2020"
+Title "Folkrace Car 2020 laZEr"
 Date "2020-03-18"
 Rev "1.0"
 Comp "Noel Danielsson"
@@ -1010,4 +1010,6 @@ Text Label 11700 4400 0    50   ~ 0
 FAN_CTRL
 Wire Wire Line
 	11700 4400 12300 4400
+Text Notes 11800 9950 0    50   ~ 0
+Todo:\n* Add additional eFuse for motor\n* Add motor controller\n* Add in start module connector & outline for placement\n* Change to horizontal connectors\n* Add connector for hall-sensor\n* Decide on connector for motor\n* Add connector & PMOS for TOF sensor
 $EndSCHEMATC

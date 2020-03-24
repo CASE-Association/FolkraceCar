@@ -594,8 +594,8 @@ Wire Wire Line
 	2100 3450 2550 3450
 Text Notes 1650 2700 0    50   ~ 0
 ON/OFF
-Text Notes 11850 3400 0    100  ~ 0
-FAN CONTROL (ON/OFF)
+Text Notes 12550 3450 0    100  ~ 0
+Fan Control
 $Comp
 L Device:R R6
 U 1 1 5E902DB0
@@ -916,7 +916,7 @@ F 3 "~" H 13000 2200 50  0001 C CNN
 	1    13000 2200
 	-1   0    0    1   
 $EndComp
-Text Notes 12050 1650 0    100  ~ 0
+Text Notes 12600 1600 0    100  ~ 0
 Servo Connector
 $Comp
 L power:+5V #PWR0119
@@ -1010,4 +1010,6 @@ Text Label 11700 4400 0    50   ~ 0
 FAN_CTRL
 Wire Wire Line
 	11700 4400 12300 4400
+Text Notes 11800 9950 0    50   ~ 0
+Todo:\n* Add additional eFuse for motor\n* Add motor controller\n* Add in start module connector & outline for placement\n* Change to horizontal connectors\n* Add connector for hall-sensor\n* Decide on connector for motor\n* Add connector & PMOS for TOF sensor
 $EndSCHEMATC
