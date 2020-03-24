@@ -16,4 +16,11 @@ K eFuse
 F http://www.ti.com/lit/ds/symlink/tps25940-q1.pdf
 $ENDCMP
 #
+#
+$CMP DRV8874PWPR
+D H-Bridge Motor Driver With Integrated Current Sense and Regulation
+K
+F https://www.ti.com/lit/gpn/DRV8874
+$ENDCMP
+#
 #End Doc Library

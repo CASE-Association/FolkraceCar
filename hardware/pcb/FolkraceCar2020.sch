@@ -923,10 +923,10 @@ Connection ~ 10150 5500
 Wire Wire Line
 	10150 5500 10150 5600
 $Comp
-L power:+3V3 #PWR?
+L power:+3V3 #PWR0102
 U 1 1 5E83D1BD
 P 3150 8600
-F 0 "#PWR?" H 3150 8450 50  0001 C CNN
+F 0 "#PWR0102" H 3150 8450 50  0001 C CNN
 F 1 "+3V3" H 3165 8773 50  0000 C CNN
 F 2 "" H 3150 8600 50  0001 C CNN
 F 3 "" H 3150 8600 50  0001 C CNN
@@ -936,4 +936,21 @@ $EndComp
 Wire Wire Line
 	3150 8600 3150 8750
 Connection ~ 3150 8750
+$Comp
+L DCDC:DRV8874PWPR IC1
+U 1 1 5E7B2154
+P 4750 5300
+F 0 "IC1" H 5450 5565 50  0000 C CNN
+F 1 "DRV8874PWPR" H 5450 5474 50  0000 C CNN
+F 2 "DCDC:SOP65P640X120-17N" H 6000 5400 50  0001 L CNN
+F 3 "https://www.ti.com/lit/gpn/DRV8874" H 6000 5300 50  0001 L CNN
+F 4 "H-Bridge Motor Driver With Integrated Current Sense and Regulation" H 6000 5200 50  0001 L CNN "Description"
+F 5 "1.2" H 6000 5100 50  0001 L CNN "Height"
+F 6 "595-DRV8874PWPR" H 6000 5000 50  0001 L CNN "Mouser Part Number"
+F 7 "https://www.mouser.com/Search/Refine.aspx?Keyword=595-DRV8874PWPR" H 6000 4900 50  0001 L CNN "Mouser Price/Stock"
+F 8 "Texas Instruments" H 6000 4800 50  0001 L CNN "Manufacturer_Name"
+F 9 "DRV8874PWPR" H 6000 4700 50  0001 L CNN "Manufacturer_Part_Number"
+	1    4750 5300
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
