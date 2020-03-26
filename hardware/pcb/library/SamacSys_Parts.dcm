@@ -1,0 +1,26 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NE555DR
+D Single Precision Timer
+F http://www.ti.com/lit/ds/symlink/ne555.pdf
+$ENDCMP
+#
+$CMP OKL-T_6-W12N-C
+D MURATA POWER SOLUTIONS - OKL-T/6-W12N-C - DC/DC CONVERTER, 30W, ADJ OUTPUT
+F https://componentsearchengine.com/Datasheets/1/OKL-T_6-W12N-C.pdf
+$ENDCMP
+#
+$CMP TPS25940x-Q1
+D 2.7-V to 18-V eFuse with Integrated Short-to-Battery Protection
+K eFuse
+F http://www.ti.com/lit/ds/symlink/tps25940-q1.pdf
+$ENDCMP
+#
+#
+$CMP DRV8874PWPR
+D H-Bridge Motor Driver With Integrated Current Sense and Regulation
+K
+F https://www.ti.com/lit/gpn/DRV8874
+$ENDCMP
+#
+#End Doc Library

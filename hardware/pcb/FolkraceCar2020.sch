@@ -4,7 +4,7 @@ EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
-Title "Folkrace Car 2020"
+Title "Folkrace Car 2020 laZEr"
 Date "2020-03-18"
 Rev "1.0"
 Comp "Noel Danielsson"
@@ -14,196 +14,38 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Connector_Generic:Conn_02x20_Odd_Even J2
-U 1 1 5E74EEE3
-P 2500 6600
-F 0 "J2" H 2550 7717 50  0000 C CNN
-F 1 "Jetson Nano Header" H 2550 7626 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical" H 2500 6600 50  0001 C CNN
-F 3 "https://www.jetsonhacks.com/nvidia-jetson-nano-j41-header-pinout/" H 2500 6600 50  0001 C CNN
-	1    2500 6600
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:+5V #PWR0101
 U 1 1 5E75497F
-P 3800 5500
-F 0 "#PWR0101" H 3800 5350 50  0001 C CNN
-F 1 "+5V" H 3815 5673 50  0000 C CNN
-F 2 "" H 3800 5500 50  0001 C CNN
-F 3 "" H 3800 5500 50  0001 C CNN
-	1    3800 5500
+P 9850 5400
+F 0 "#PWR0101" H 9850 5250 50  0001 C CNN
+F 1 "+5V" H 9865 5573 50  0000 C CNN
+F 2 "" H 9850 5400 50  0001 C CNN
+F 3 "" H 9850 5400 50  0001 C CNN
+	1    9850 5400
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2800 5700 3800 5700
-Wire Wire Line
-	3800 5700 3800 5500
-Wire Wire Line
-	2800 5800 3800 5800
-Wire Wire Line
-	3800 5800 3800 5700
-Connection ~ 3800 5700
-$Comp
-L power:+3V3 #PWR0102
-U 1 1 5E7554D2
-P 1400 5550
-F 0 "#PWR0102" H 1400 5400 50  0001 C CNN
-F 1 "+3V3" H 1415 5723 50  0000 C CNN
-F 2 "" H 1400 5550 50  0001 C CNN
-F 3 "" H 1400 5550 50  0001 C CNN
-	1    1400 5550
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 5700 1400 5700
-Wire Wire Line
-	1400 5700 1400 5550
-Text Label 2300 5800 2    50   ~ 0
-I2C_2SDA
-Text Label 2300 5900 2    50   ~ 0
-I2C_2_SCL
-Text Label 2300 6000 2    50   ~ 0
-AUDIO_MCLK
-Text Label 2300 6200 2    50   ~ 0
-UART_2_RTS
-Text Label 2300 6300 2    50   ~ 0
-SPI_2_SCK
-Text Label 2300 6400 2    50   ~ 0
-LCD_TE
-Text Label 2300 6600 2    50   ~ 0
-SPI_1_MOSI
-Text Label 2300 6700 2    50   ~ 0
-SPI_1_MISO
-Text Label 2300 6800 2    50   ~ 0
-SPI_1_SCK
-Text Label 2300 6900 2    50   ~ 0
-GND
-Text Label 2300 7000 2    50   ~ 0
-I2C_1_SDA
-Text Label 2300 7100 2    50   ~ 0
-CAM_AF_EN
-Text Label 2300 7200 2    50   ~ 0
-GPIO_PZ0
-Text Label 2300 7300 2    50   ~ 0
-GPIO_PE6
-Text Label 2300 7400 2    50   ~ 0
-I2S_4_LRCK
-Text Label 2300 7500 2    50   ~ 0
-SPI_2_MOSI
-Text Label 2300 7600 2    50   ~ 0
-GND
-Text Label 2800 5900 0    50   ~ 0
-GND
-Text Label 2800 6000 0    50   ~ 0
-UART_2_TX
-Text Label 2800 6100 0    50   ~ 0
-UART_2_RX
-Text Label 2800 6200 0    50   ~ 0
-I2S_4_SCLK
-Text Label 2800 6400 0    50   ~ 0
-SPI_2_CS1
-Text Label 2800 6500 0    50   ~ 0
-SPI_2_CS0
-Text Label 2800 6600 0    50   ~ 0
-GND
-Text Label 2800 6700 0    50   ~ 0
-SPI_2_MISO
-Text Label 2800 6800 0    50   ~ 0
-SPI_1_CS0
-Text Label 2800 6900 0    50   ~ 0
-SPI_1_CS1
-Text Label 2800 7000 0    50   ~ 0
-I2C_1_SCL
-Text Label 2800 7100 0    50   ~ 0
-GND
-Text Label 2800 7200 0    50   ~ 0
-LCD_BL_PWM
-Text Label 2800 7400 0    50   ~ 0
-UART_2_CTS
-Text Label 2800 7500 0    50   ~ 0
-I2S_4_SDIN
-Text Label 2800 7600 0    50   ~ 0
-I2S_4_SDOUT
-$Comp
-L power:GND #PWR0103
-U 1 1 5E75D2C6
-P 1400 7800
-F 0 "#PWR0103" H 1400 7550 50  0001 C CNN
-F 1 "GND" H 1405 7627 50  0000 C CNN
-F 2 "" H 1400 7800 50  0001 C CNN
-F 3 "" H 1400 7800 50  0001 C CNN
-	1    1400 7800
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 6100 1400 6100
-Wire Wire Line
-	1400 6100 1400 6900
 $Comp
 L power:+3V3 #PWR0104
 U 1 1 5E7675B3
-P 1650 6400
-F 0 "#PWR0104" H 1650 6250 50  0001 C CNN
-F 1 "+3V3" H 1665 6573 50  0000 C CNN
-F 2 "" H 1650 6400 50  0001 C CNN
-F 3 "" H 1650 6400 50  0001 C CNN
-	1    1650 6400
+P 10150 5400
+F 0 "#PWR0104" H 10150 5250 50  0001 C CNN
+F 1 "+3V3" H 10165 5573 50  0000 C CNN
+F 2 "" H 10150 5400 50  0001 C CNN
+F 3 "" H 10150 5400 50  0001 C CNN
+	1    10150 5400
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2300 6500 1650 6500
-Wire Wire Line
-	1650 6500 1650 6400
-Text Label 2800 6300 0    50   ~ 0
-GND
-Text Label 2800 7300 0    50   ~ 0
-GND
-Wire Wire Line
-	2300 7600 1400 7600
-Connection ~ 1400 7600
-Wire Wire Line
-	1400 7600 1400 7800
-Wire Wire Line
-	2300 6900 1400 6900
-Connection ~ 1400 6900
-Wire Wire Line
-	1400 6900 1400 7600
 $Comp
 L power:GND #PWR0105
 U 1 1 5E77B169
-P 3800 7800
-F 0 "#PWR0105" H 3800 7550 50  0001 C CNN
-F 1 "GND" H 3805 7627 50  0000 C CNN
-F 2 "" H 3800 7800 50  0001 C CNN
-F 3 "" H 3800 7800 50  0001 C CNN
-	1    3800 7800
+P 9650 8350
+F 0 "#PWR0105" H 9650 8100 50  0001 C CNN
+F 1 "GND" H 9655 8177 50  0000 C CNN
+F 2 "" H 9650 8350 50  0001 C CNN
+F 3 "" H 9650 8350 50  0001 C CNN
+	1    9650 8350
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2800 5900 3800 5900
-Wire Wire Line
-	3800 5900 3800 6300
-Wire Wire Line
-	2800 6300 3800 6300
-Connection ~ 3800 6300
-Wire Wire Line
-	3800 6300 3800 6600
-Wire Wire Line
-	2800 6600 3800 6600
-Connection ~ 3800 6600
-Wire Wire Line
-	3800 6600 3800 7100
-Wire Wire Line
-	2800 7100 3800 7100
-Connection ~ 3800 7100
-Wire Wire Line
-	3800 7100 3800 7300
-Wire Wire Line
-	2800 7300 3800 7300
-Connection ~ 3800 7300
-Wire Wire Line
-	3800 7300 3800 7800
 $Comp
 L Connector:Conn_01x02_Male J1
 U 1 1 5E780E66
@@ -299,12 +141,12 @@ Connection ~ 3050 2150
 $Comp
 L Analog_ADC:ADS1115IDGS U3
 U 1 1 5E77ACD6
-P 9300 6450
-F 0 "U3" H 9050 6900 50  0000 C CNN
-F 1 "ADS1115IDGS" H 9600 6100 50  0000 C CNN
-F 2 "Package_SO:TSSOP-10_3x3mm_P0.5mm" H 9300 5950 50  0001 C CNN
-F 3 "http://www.ti.com/lit/ds/symlink/ads1113.pdf" H 9250 5550 50  0001 C CNN
-	1    9300 6450
+P 3150 9800
+F 0 "U3" H 2900 10250 50  0000 C CNN
+F 1 "ADS1115IDGS" H 3450 9450 50  0000 C CNN
+F 2 "Package_SO:TSSOP-10_3x3mm_P0.5mm" H 3150 9300 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/ads1113.pdf" H 3100 8900 50  0001 C CNN
+	1    3150 9800
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -422,7 +264,7 @@ U 1 1 5E811437
 P 2950 3100
 F 0 "C3" H 3065 3146 50  0000 L CNN
 F 1 "C" H 3065 3055 50  0000 L CNN
-F 2 "" H 2988 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2988 2950 50  0001 C CNN
 F 3 "~" H 2950 3100 50  0001 C CNN
 	1    2950 3100
 	1    0    0    -1  
@@ -642,46 +484,46 @@ Wire Wire Line
 $Comp
 L Device:C C4
 U 1 1 5E9289BE
-P 9850 5650
-F 0 "C4" H 9965 5696 50  0000 L CNN
-F 1 "C" H 9965 5605 50  0000 L CNN
-F 2 "" H 9888 5500 50  0001 C CNN
-F 3 "~" H 9850 5650 50  0001 C CNN
-	1    9850 5650
+P 3700 9000
+F 0 "C4" H 3815 9046 50  0000 L CNN
+F 1 "C" H 3815 8955 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 3738 8850 50  0001 C CNN
+F 3 "~" H 3700 9000 50  0001 C CNN
+	1    3700 9000
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR0110
 U 1 1 5E9299CF
-P 9850 5850
-F 0 "#PWR0110" H 9850 5600 50  0001 C CNN
-F 1 "GND" H 9855 5677 50  0000 C CNN
-F 2 "" H 9850 5850 50  0001 C CNN
-F 3 "" H 9850 5850 50  0001 C CNN
-	1    9850 5850
+P 3700 9200
+F 0 "#PWR0110" H 3700 8950 50  0001 C CNN
+F 1 "GND" H 3705 9027 50  0000 C CNN
+F 2 "" H 3700 9200 50  0001 C CNN
+F 3 "" H 3700 9200 50  0001 C CNN
+	1    3700 9200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9850 5850 9850 5800
+	3700 9200 3700 9150
 Wire Wire Line
-	9850 5500 9850 5400
+	3700 8850 3700 8750
 Wire Wire Line
-	9850 5400 9300 5400
+	3700 8750 3150 8750
 Wire Wire Line
-	9300 5400 9300 5950
+	3150 8750 3150 9300
 $Comp
 L power:GND #PWR0111
 U 1 1 5E93213A
-P 9300 7000
-F 0 "#PWR0111" H 9300 6750 50  0001 C CNN
-F 1 "GND" H 9305 6827 50  0000 C CNN
-F 2 "" H 9300 7000 50  0001 C CNN
-F 3 "" H 9300 7000 50  0001 C CNN
-	1    9300 7000
+P 3150 10350
+F 0 "#PWR0111" H 3150 10100 50  0001 C CNN
+F 1 "GND" H 3155 10177 50  0000 C CNN
+F 2 "" H 3150 10350 50  0001 C CNN
+F 3 "" H 3150 10350 50  0001 C CNN
+	1    3150 10350
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9300 6850 9300 7000
+	3150 10200 3150 10350
 Text Notes 2900 1250 0    118  ~ 0
 Power Input eFuse
 $Comp
@@ -845,65 +687,65 @@ Wire Wire Line
 $Comp
 L Device:R R11
 U 1 1 5E9DE14F
-P 7650 6100
-F 0 "R11" H 7720 6146 50  0000 L CNN
-F 1 "R" H 7720 6055 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 7580 6100 50  0001 C CNN
-F 3 "~" H 7650 6100 50  0001 C CNN
-	1    7650 6100
+P 1500 9450
+F 0 "R11" H 1570 9496 50  0000 L CNN
+F 1 "R" H 1570 9405 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 1430 9450 50  0001 C CNN
+F 3 "~" H 1500 9450 50  0001 C CNN
+	1    1500 9450
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R12
 U 1 1 5E9DE5F8
-P 7650 6600
-F 0 "R12" H 7720 6646 50  0000 L CNN
-F 1 "R" H 7720 6555 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 7580 6600 50  0001 C CNN
-F 3 "~" H 7650 6600 50  0001 C CNN
-	1    7650 6600
+P 1500 9950
+F 0 "R12" H 1570 9996 50  0000 L CNN
+F 1 "R" H 1570 9905 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 1430 9950 50  0001 C CNN
+F 3 "~" H 1500 9950 50  0001 C CNN
+	1    1500 9950
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:VBUS #PWR0117
 U 1 1 5E9DEB4D
-P 7650 5850
-F 0 "#PWR0117" H 7650 5700 50  0001 C CNN
-F 1 "VBUS" H 7665 6023 50  0000 C CNN
-F 2 "" H 7650 5850 50  0001 C CNN
-F 3 "" H 7650 5850 50  0001 C CNN
-	1    7650 5850
+P 1500 9200
+F 0 "#PWR0117" H 1500 9050 50  0001 C CNN
+F 1 "VBUS" H 1515 9373 50  0000 C CNN
+F 2 "" H 1500 9200 50  0001 C CNN
+F 3 "" H 1500 9200 50  0001 C CNN
+	1    1500 9200
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR0118
 U 1 1 5E9DF0EC
-P 7650 6850
-F 0 "#PWR0118" H 7650 6600 50  0001 C CNN
-F 1 "GND" H 7655 6677 50  0000 C CNN
-F 2 "" H 7650 6850 50  0001 C CNN
-F 3 "" H 7650 6850 50  0001 C CNN
-	1    7650 6850
+P 1500 10200
+F 0 "#PWR0118" H 1500 9950 50  0001 C CNN
+F 1 "GND" H 1505 10027 50  0000 C CNN
+F 2 "" H 1500 10200 50  0001 C CNN
+F 3 "" H 1500 10200 50  0001 C CNN
+	1    1500 10200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7650 5850 7650 5950
+	1500 9200 1500 9300
 Wire Wire Line
-	7650 6250 7650 6350
+	1500 9600 1500 9700
 Wire Wire Line
-	7650 6750 7650 6850
+	1500 10100 1500 10200
 Wire Wire Line
-	8900 6350 7650 6350
-Connection ~ 7650 6350
+	2750 9700 1500 9700
+Connection ~ 1500 9700
 Wire Wire Line
-	7650 6350 7650 6450
+	1500 9700 1500 9800
 Text Label 4450 2850 0    50   ~ 0
 IMON
-Text Label 8550 6450 2    50   ~ 0
+Text Label 2400 9800 2    50   ~ 0
 IMON
 Wire Wire Line
-	8550 6450 8900 6450
-Text Label 8550 6350 2    50   ~ 0
+	2400 9800 2750 9800
+Text Label 2400 9700 2    50   ~ 0
 VMON
 $Comp
 L Connector:Conn_01x03_Male J3
@@ -1010,4 +852,105 @@ Text Label 11700 4400 0    50   ~ 0
 FAN_CTRL
 Wire Wire Line
 	11700 4400 12300 4400
+Text Notes 11800 9950 0    50   ~ 0
+Todo:\n* Add additional eFuse for motor\n* Add motor controller\n* Add in start module connector & outline for placement\n* Change to horizontal connectors\n* Add connector for hall-sensor\n* Decide on connector for motor\n* Add connector & PMOS for TOF sensor
+$Comp
+L Connector:Raspberry_Pi_2_3 J5
+U 1 1 5E7C70F3
+P 10050 6900
+F 0 "J5" H 9300 8300 50  0000 C CNN
+F 1 "Raspberry_Pi" H 9500 8200 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical" H 10050 6900 50  0001 C CNN
+F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 10050 6900 50  0001 C CNN
+	1    10050 6900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9850 5600 9850 5500
+Wire Wire Line
+	9950 5600 9950 5500
+Wire Wire Line
+	9950 5500 9850 5500
+Connection ~ 9850 5500
+Wire Wire Line
+	9850 5500 9850 5400
+Wire Wire Line
+	9650 8200 9650 8250
+Wire Wire Line
+	9650 8250 9750 8250
+Wire Wire Line
+	9750 8250 9750 8200
+Connection ~ 9650 8250
+Wire Wire Line
+	9650 8250 9650 8350
+Wire Wire Line
+	9850 8200 9850 8250
+Wire Wire Line
+	9850 8250 9750 8250
+Connection ~ 9750 8250
+Wire Wire Line
+	9950 8200 9950 8250
+Wire Wire Line
+	9950 8250 9850 8250
+Connection ~ 9850 8250
+Wire Wire Line
+	10350 8200 10350 8250
+Wire Wire Line
+	10350 8250 10250 8250
+Connection ~ 9950 8250
+Wire Wire Line
+	10050 8200 10050 8250
+Connection ~ 10050 8250
+Wire Wire Line
+	10050 8250 9950 8250
+Wire Wire Line
+	10150 8200 10150 8250
+Connection ~ 10150 8250
+Wire Wire Line
+	10150 8250 10050 8250
+Wire Wire Line
+	10250 8200 10250 8250
+Connection ~ 10250 8250
+Wire Wire Line
+	10250 8250 10150 8250
+Wire Wire Line
+	10150 5400 10150 5500
+Wire Wire Line
+	10250 5600 10250 5500
+Wire Wire Line
+	10250 5500 10150 5500
+Connection ~ 10150 5500
+Wire Wire Line
+	10150 5500 10150 5600
+$Comp
+L power:+3V3 #PWR0102
+U 1 1 5E83D1BD
+P 3150 8600
+F 0 "#PWR0102" H 3150 8450 50  0001 C CNN
+F 1 "+3V3" H 3165 8773 50  0000 C CNN
+F 2 "" H 3150 8600 50  0001 C CNN
+F 3 "" H 3150 8600 50  0001 C CNN
+	1    3150 8600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3150 8600 3150 8750
+Connection ~ 3150 8750
+$Comp
+L DCDC:DRV8874PWPR IC1
+U 1 1 5E7B2154
+P 4750 5300
+F 0 "IC1" H 5450 5565 50  0000 C CNN
+F 1 "DRV8874PWPR" H 5450 5474 50  0000 C CNN
+F 2 "DCDC:SOP65P640X120-17N" H 6000 5400 50  0001 L CNN
+F 3 "https://www.ti.com/lit/gpn/DRV8874" H 6000 5300 50  0001 L CNN
+F 4 "H-Bridge Motor Driver With Integrated Current Sense and Regulation" H 6000 5200 50  0001 L CNN "Description"
+F 5 "1.2" H 6000 5100 50  0001 L CNN "Height"
+F 6 "595-DRV8874PWPR" H 6000 5000 50  0001 L CNN "Mouser Part Number"
+F 7 "https://www.mouser.com/Search/Refine.aspx?Keyword=595-DRV8874PWPR" H 6000 4900 50  0001 L CNN "Mouser Price/Stock"
+F 8 "Texas Instruments" H 6000 4800 50  0001 L CNN "Manufacturer_Name"
+F 9 "DRV8874PWPR" H 6000 4700 50  0001 L CNN "Manufacturer_Part_Number"
+	1    4750 5300
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
