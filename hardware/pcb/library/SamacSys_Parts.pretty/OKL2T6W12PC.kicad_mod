@@ -1,4 +1,4 @@
-(module OKL2T6W12PC (layer F.Cu) (tedit 5E751B30)
+(module OKL2T6W12PC (layer F.Cu) (tedit 5E7E18A6)
   (descr OKL-T/3-W5)
   (tags "Undefined or Miscellaneous")
   (attr smd)
@@ -35,7 +35,7 @@
   (pad 10 smd rect (at -4.57 2.29 90) (size 1.27 1.27) (layers F.Cu F.Paste F.Mask))
   (pad 11 smd rect (at 4.58 2.29 90) (size 1.27 1.27) (layers F.Cu F.Paste F.Mask))
   (pad 12 smd rect (at 2.29 4.58 90) (size 1.27 1.27) (layers F.Cu F.Paste F.Mask))
-  (model ${KIPRJMOD}/lib/SamacSys_Parts.3dshapes/OKL-T_6-W12N-C.stp
+  (model ${KIPRJMOD}/library/SamacSys_Parts.3dshapes/OKL-T_6-W12N-C.stp
     (at (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
