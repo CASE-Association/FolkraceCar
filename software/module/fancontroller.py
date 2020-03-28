@@ -4,6 +4,7 @@ import RPi.GPIO as GPIO
 import multiprocessing as mp
 import time
 
+
 class FanController:
     def __init__(self, fan_pin, verbose=False, on_temp=60, off_temp=50):
         self._fan_pin = fan_pin
@@ -16,7 +17,7 @@ class FanController:
         _p.start()
 
     def _run(self):
-        dt = 5
+        dt = 5  # update delay
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self._fan_pin, GPIO.OUT)  # step
         fan_state = GPIO.HIGH

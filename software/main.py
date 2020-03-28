@@ -114,7 +114,7 @@ def main():
                 print('\nCtrl-C to end')
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
-                steer = theta * 2.5
+                steer = theta * 4
                 # update steer and speed value
                 steer_servo.q.put(steer)
                 speed_servo.q.put(speed)

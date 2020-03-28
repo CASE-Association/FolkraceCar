@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 
 
 class Servo:
-    def __init__(self, queue, pin, verbose="False"):
+    def __init__(self, queue, pin, verbose=False):
         self.q = queue
         self.servopin = pin
         self.verbose = verbose
@@ -18,6 +18,7 @@ class Servo:
 
     def start(self):
         self.p = Process(target=self.run, args=((self.q),))
+        #self.q.daemon = True
         self.p.start()
 
     def end(self):
@@ -70,12 +71,14 @@ class Servo:
 
 
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BOARD)
 
-    GPIO.setup(7, GPIO.OUT)  # step
-    pwm = GPIO.PWM(7, 50)
-    pwm.start(0)
+    servo = Servo(Queue(), pin=33, verbose=True)
+    servo.start()
+    try:
+        for i in range(5, 11, 1):
+            servo.q.put(i)
+            time.sleep(2)
+    except KeyboardInterrupt:
+        pass
 
-    for i in range(10):
-        pwm.ChangeDutyCycle(i)
-        time.sleep(0.5)
+    servo.q.put('END')
