@@ -15,6 +15,7 @@ from module.Car_Handler import *
 from module.PathFinder import *
 from module.servo import *
 from module.CONST import *
+from module.fancontroller import *
 import time
 import os
 
@@ -56,6 +57,9 @@ def main():
     :return: None
     """
     # init
+
+    # Create a fan controller
+    FanController(fan_pin=22)
 
     #   Car is the process handling the dynamics of the car
     car = CarHandler(car_size=car_size, camera_car_offset=camera_car_offset)
