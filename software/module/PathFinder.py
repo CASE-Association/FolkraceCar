@@ -1,17 +1,15 @@
-from typing import Union
 
-import module.pyrealsense2 as rs
-
+import pyrealsense2 as rs
 from numpy.linalg import svd, det
-import time
-import threading as mt
 import multiprocessing as mp
 from module.ImageHandler import *
 import numpy as np
 import sys
+from module.ImageHandler import Camera
+from module.CONST import *
 
 
-class PathPlanner:
+class PathFinder:
     def __init__(self, Camera, Car):
         """
         Gradient decent solving path planner ## todo Evaluate against other methods of path planning
@@ -21,7 +19,7 @@ class PathPlanner:
         self.cam.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
         self.car = Car
         self.running = False
-        self.points = []
+        self._camera_offset = self.car.size[2] - self.car.camera_offset[2]
 
         self.points = np.transpose(self.cam.get_verts())  # todo fix some function to call instead
         self.ground_plane = self._get_ground_plane()
@@ -135,27 +133,27 @@ class PathPlanner:
         :param theta: The desired turning angle
         :param phi: The desired incline angle.
         :param ground_plane: The estimated driving plane.
-        :return: All points in defined direction and for the defined tunnel size.
+        :return: All inlier points in defined direction and for the defined tunnel size.
         """
         # todo
-        #  implement as cp
         #  driving plane
 
-        # p = cp.asanyarray(verts)
         p = verts
+        z_lim = 1.0  # todo get lim from car size like:
+        # z_lim = self._camera_offset
 
         X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
         [w, h] = tunnel_size
 
-        # inlier index
-        I = []
+        # inlier index vector
+        #I = []
 
         """
         Basic depth filter (Z)
-        do not allow points with no distance (z=0)
+        do not allow points within car area.
         """
 
-        I = np.where((Z > 0.0))[0]
+        I = np.where((Z > z_lim))[0]
         # if no inliers return None
         if not I.any():
             return None
@@ -199,9 +197,11 @@ class PathPlanner:
         tunnel_size = self.car.size[0:2]
         verts = self.cam.get_verts()
 
-        _max_dist = 0
-        for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), 5):
+        _max_dist = 0  # longest found path distace
+        _n_scan_steps = 5
+        for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), _n_scan_steps):
 
+            # process verts to get inlier points
             inliers = self.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=self.phi)
 
             if inliers.any():
@@ -210,6 +210,7 @@ class PathPlanner:
                 if _dist > _max_dist * 1.1:  # Must be more than 10% longer
                     theta = _theta
                     _max_dist = _dist
+
 
         if theta is not None:
             return _max_dist, theta
@@ -243,22 +244,18 @@ def init_pipe(width=640, height=480, fps=0, dfps=0):
 
 
 def path_plan(car, q):
+    """
+    Main Path planner Process
+    :param car:
+    :param q:
+    :return:
+    """
     rx_msg = []
-    from module.ImageHandler import Camera
-    from main import frame_width, frame_height, fps, dfps
 
     pipe = init_pipe(frame_width, frame_height, fps, dfps)
     cam = Camera(pipe)
-    pp = PathPlanner(cam, car)
-    run = True
-    while run:
-        try:
-            rx_msg = q.get(block=False)
-            if "END" in rx_msg:
-                run = False
-                break
-        except Exception as err:
-            pass
+    pp = PathFinder(cam, car)
+    while True:
         pp.ground_plane = pp._get_ground_plane()
         pp.dist, pp.theta = pp._get_path()
         _t_now = time.perf_counter()
@@ -269,9 +266,18 @@ def path_plan(car, q):
                   'theta': pp.theta,
                   'ground': pp.ground_plane,
                   'last_reading': pp.last_reading}
-        q.put(tx_msg)  # send data as Queue message
+        try:
+            rx_msg = q.get(block=False)
+        except Exception:
+            pass
+        if "END" in rx_msg:
+            while not q.empty():  # flush queue
+                q.get()
+            q.close()
+            break   # End process
+        else:
+            q.put(tx_msg)  # send data as Queue message
 
     cam.end()
-    q.close()
-    q.join_thread()
-    print('ex')
+    print('\n\033[92m Path planner ended\033[0m')
+
