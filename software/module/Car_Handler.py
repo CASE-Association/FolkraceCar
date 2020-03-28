@@ -10,7 +10,7 @@ import threading as mt
 import time
 
 
-class Folkracer:
+class CarHandler:
     def __init__(self, car_size, camera_car_offset):
         """
         Main Car object.
@@ -31,7 +31,7 @@ class Folkracer:
             self.camera_offset = camera_car_offset
         self.steer = 0
         self.speed = 0
-        self.brake = True
+        self.brake = False
         self.running = False
         self.state = [self.steer, self.speed, self.brake]
 

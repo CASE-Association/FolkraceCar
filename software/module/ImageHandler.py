@@ -1,12 +1,10 @@
-#import cv2.load_config_py3
+
 import cv2
 import math
 import time
 import pyrealsense2 as rs
 import numpy as np
-
-from main import camera_car_offset, frame_height, frame_width
-
+from module.CONST import *
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):

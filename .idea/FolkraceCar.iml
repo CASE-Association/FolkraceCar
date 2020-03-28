@@ -7,7 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/hardware" />
       <excludeFolder url="file://$MODULE_DIR$/img" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.7.3 (sftp://pi@192.168.1.191:22/usr/bin/python3)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.7.3 (sftp://pi@192.168.1.192:22/usr/bin/python3.7)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
