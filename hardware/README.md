@@ -4,7 +4,7 @@ This document describes a general overview of the system hardware used.
 
 ### Preliminary rendering of electronics
 
-![Electronics Render](img/Electronics Render.png)
+![Electronics Render](img/ElectronicsRender.png)
 
 ### Todo hardware
 * Add connector for hall effect sensor (should include pull-up)
