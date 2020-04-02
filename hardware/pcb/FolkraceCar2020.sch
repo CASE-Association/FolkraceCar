@@ -69,11 +69,9 @@ F 1 "OKL-T_6-W12N-C" H 9750 1874 50  0000 C CNN
 F 2 "DCDC:OKL2T6W12PC" H 10250 1800 50  0001 L CNN
 F 3 "https://componentsearchengine.com/Datasheets/1/OKL-T_6-W12N-C.pdf" H 10250 1700 50  0001 L CNN
 F 4 "MURATA POWER SOLUTIONS - OKL-T/6-W12N-C - DC/DC CONVERTER, 30W, ADJ OUTPUT" H 10250 1600 50  0001 L CNN "Description"
-F 5 "7.2" H 10250 1500 50  0001 L CNN "Height"
-F 6 "580-OKL-T/6-W12N-C" H 10250 1400 50  0001 L CNN "Mouser Part Number"
-F 7 "https://www.mouser.com/Search/Refine.aspx?Keyword=580-OKL-T%2F6-W12N-C" H 10250 1300 50  0001 L CNN "Mouser Price/Stock"
-F 8 "Murata Electronics" H 10250 1200 50  0001 L CNN "Manufacturer_Name"
-F 9 "OKL-T/6-W12N-C" H 10250 1100 50  0001 L CNN "Manufacturer_Part_Number"
+F 5 "Mouser" H 9100 1700 50  0001 C CNN "Distributor"
+F 6 "580-OKL-T/6-W12N-C" H 9100 1700 50  0001 C CNN "DPN"
+F 7 "OKL-T_6-W12N-C" H 9100 1700 50  0001 C CNN "MPN"
 	1    9100 1700
 	1    0    0    -1  
 $EndComp
@@ -85,6 +83,11 @@ F 0 "U2" H 5200 3265 50  0000 C CNN
 F 1 "TPS25940x-Q1" H 5200 3174 50  0000 C CNN
 F 2 "Package_DFN_QFN:QFN-20-1EP_3x4mm_P0.5mm_EP1.65x2.65mm_ThermalVias" H 5200 3400 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/tps25940-q1.pdf" H 5450 2050 50  0001 C CNN
+F 4 "TPS25940LQRVCRQ1" H 5200 2400 50  0001 C CNN "MPN"
+F 5 "Latching and automotive variant" H 5200 2400 50  0001 C CNN "Comments"
+F 6 "595-TPS25940LQRVCRQ1" H 5200 2400 50  0001 C CNN "DPN"
+F 7 "Mouser" H 5200 2400 50  0001 C CNN "Distributor"
+F 8 "Texas Instruments" H 5200 2400 50  0001 C CNN "Manufacturer"
 	1    5200 2400
 	1    0    0    -1  
 $EndComp
@@ -360,7 +363,7 @@ F 3 "https://eu.mouser.com/datasheet/2/307/en-a6s-1224092.pdf" H 3550 2850 50  0
 F 4 "Omron" H 3550 2850 50  0001 C CNN "Manufacturer"
 F 5 "A6S-1102-PH" H 3550 2850 50  0001 C CNN "MPN"
 F 6 "Mouser" H 3550 2850 50  0001 C CNN "Distributor"
-F 7 "653-A6S-1102-PH" H 3550 2850 50  0001 C CNN "Distributor PN"
+F 7 "653-A6S-1102-PH" H 3550 2850 50  0001 C CNN "DPN"
 	1    3550 2850
 	0    -1   -1   0   
 $EndComp
@@ -572,7 +575,7 @@ P 7100 2400
 F 0 "Q1" H 7304 2446 50  0000 L CNN
 F 1 "BSS138" H 7304 2355 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 7300 2325 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/BS/BSS138.pdf" H 7100 2400 50  0001 L CNN
+F 3 "https://www.onsemi.com/pub/Collateral/BSS138-D.PDF" H 7100 2400 50  0001 L CNN
 	1    7100 2400
 	1    0    0    -1  
 $EndComp
@@ -751,9 +754,13 @@ L Transistor_FET:DMN10H220L Q2
 U 1 1 5EA42ADB
 P 11950 5000
 F 0 "Q2" H 12154 5046 50  0000 L CNN
-F 1 "DMN10H220L" H 12154 4955 50  0000 L CNN
+F 1 "MGSF2N02ELT1G" H 12154 4955 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 12150 4925 50  0001 L CIN
-F 3 "http://www.diodes.com/assets/Datasheets/DMN10H220L.pdf" H 11950 5000 50  0001 L CNN
+F 3 "https://eu.mouser.com/datasheet/2/308/MGSF2N02EL-D-1811613.pdf" H 11950 5000 50  0001 L CNN
+F 4 "Mouser" H 11950 5000 50  0001 C CNN "Distributor"
+F 5 "863-MGSF2N02ELT1G" H 11950 5000 50  0001 C CNN "DPN"
+F 6 "MGSF2N02ELT1G" H 11950 5000 50  0001 C CNN "MPN"
+F 7 "High current, low Vgsth nmos" H 11950 5000 50  0001 C CNN "Comments"
 	1    11950 5000
 	1    0    0    -1  
 $EndComp
@@ -866,11 +873,10 @@ F 1 "DRV8874PWPR" H 7300 9224 50  0000 C CNN
 F 2 "DCDC:SOP65P640X120-17N" H 7850 9150 50  0001 L CNN
 F 3 "https://www.ti.com/lit/gpn/DRV8874" H 7850 9050 50  0001 L CNN
 F 4 "H-Bridge Motor Driver With Integrated Current Sense and Regulation" H 7850 8950 50  0001 L CNN "Description"
-F 5 "1.2" H 7850 8850 50  0001 L CNN "Height"
-F 6 "595-DRV8874PWPR" H 7850 8750 50  0001 L CNN "Mouser Part Number"
-F 7 "https://www.mouser.com/Search/Refine.aspx?Keyword=595-DRV8874PWPR" H 7850 8650 50  0001 L CNN "Mouser Price/Stock"
-F 8 "Texas Instruments" H 7850 8550 50  0001 L CNN "Manufacturer_Name"
-F 9 "DRV8874PWPR" H 7850 8450 50  0001 L CNN "Manufacturer_Part_Number"
+F 5 "595-DRV8874PWPR" H 6600 9050 50  0001 C CNN "DPN"
+F 6 "Mouser" H 6600 9050 50  0001 C CNN "Distributor"
+F 7 "DRV8874PWPR" H 6600 9050 50  0001 C CNN "MPN"
+F 8 "Texas Instruments" H 6600 9050 50  0001 C CNN "Manufacturer"
 	1    6600 9050
 	1    0    0    -1  
 $EndComp
@@ -879,9 +885,14 @@ L Device:C C8
 U 1 1 5E7F0803
 P 8250 2150
 F 0 "C8" H 8365 2196 50  0000 L CNN
-F 1 "C" H 8365 2105 50  0000 L CNN
+F 1 "10 uF 25 V X7R" H 8365 2105 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 8288 2000 50  0001 C CNN
 F 3 "~" H 8250 2150 50  0001 C CNN
+F 4 "Populate if necessary" H 8250 2150 50  0001 C CNN "Comments"
+F 5 "963-TMK316AB7106KL-T" H 8250 2150 50  0001 C CNN "DPN"
+F 6 "Mouser" H 8250 2150 50  0001 C CNN "Distributor"
+F 7 "TMK316AB7106KL-T" H 8250 2150 50  0001 C CNN "MPN"
+F 8 "Taiyo Yuden" H 8250 2150 50  0001 C CNN "Manufacturer"
 	1    8250 2150
 	1    0    0    -1  
 $EndComp
@@ -936,6 +947,10 @@ F 0 "C9" V 8600 9350 50  0000 C CNN
 F 1 "22nF X7R  > 16 V" V 8550 8700 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 8650 9250 50  0001 C CNN
 F 3 "~" H 8650 9250 50  0001 C CNN
+F 4 "Mouser" H 8650 9250 50  0001 C CNN "Distributor"
+F 5 "963-TMF105B7223KVHF" H 8650 9250 50  0001 C CNN "DPN"
+F 6 "TMF105B7223KVHF" H 8650 9250 50  0001 C CNN "MPN"
+F 7 "Taiyo Yuden" H 8650 9250 50  0001 C CNN "Manufacturer"
 	1    8650 9250
 	0    -1   -1   0   
 $EndComp
@@ -1081,6 +1096,10 @@ F 0 "C10" V 8600 9550 50  0000 C CNN
 F 1 "100nF X7R  > 16 V" V 8550 8900 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 8650 9450 50  0001 C CNN
 F 3 "~" H 8650 9450 50  0001 C CNN
+F 4 "Mouser" H 8650 9450 50  0001 C CNN "Distributor"
+F 5 "963-TMK105B7104MV-FR" H 8650 9450 50  0001 C CNN "DPN"
+F 6 "TMK105B7104MV-FR" H 8650 9450 50  0001 C CNN "MPN"
+F 7 "Taiyo Yuden" H 8650 9450 50  0001 C CNN "Manufacturer"
 	1    8650 9450
 	0    -1   -1   0   
 $EndComp
@@ -1509,9 +1528,14 @@ L Device:C C7
 U 1 1 5E90FBE2
 P 7950 2150
 F 0 "C7" H 8065 2196 50  0000 L CNN
-F 1 "C" H 8065 2105 50  0000 L CNN
+F 1 "10 uF 25 V X7R" H 8065 2105 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 7988 2000 50  0001 C CNN
 F 3 "~" H 7950 2150 50  0001 C CNN
+F 4 "Populate if necessary" H 7950 2150 50  0001 C CNN "Comments"
+F 5 "963-TMK316AB7106KL-T" H 7950 2150 50  0001 C CNN "DPN"
+F 6 "Mouser" H 7950 2150 50  0001 C CNN "Distributor"
+F 7 "TMK316AB7106KL-T" H 7950 2150 50  0001 C CNN "MPN"
+F 8 "Taiyo Yuden" H 7950 2150 50  0001 C CNN "Manufacturer"
 	1    7950 2150
 	1    0    0    -1  
 $EndComp
@@ -1520,9 +1544,14 @@ L Device:C C6
 U 1 1 5E90FF38
 P 7650 2150
 F 0 "C6" H 7765 2196 50  0000 L CNN
-F 1 "C" H 7765 2105 50  0000 L CNN
+F 1 "10 uF 25 V X7R" H 7765 2105 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 7688 2000 50  0001 C CNN
 F 3 "~" H 7650 2150 50  0001 C CNN
+F 4 "Populate if necessary" H 7650 2150 50  0001 C CNN "Comments"
+F 5 "963-TMK316AB7106KL-T" H 7650 2150 50  0001 C CNN "DPN"
+F 6 "Mouser" H 7650 2150 50  0001 C CNN "Distributor"
+F 7 "TMK316AB7106KL-T" H 7650 2150 50  0001 C CNN "MPN"
+F 8 "Taiyo Yuden" H 7650 2150 50  0001 C CNN "Manufacturer"
 	1    7650 2150
 	1    0    0    -1  
 $EndComp
@@ -1553,9 +1582,14 @@ L Device:C C13
 U 1 1 5E9C56B4
 P 9950 3000
 F 0 "C13" H 10065 3046 50  0000 L CNN
-F 1 "C" H 10065 2955 50  0000 L CNN
+F 1 "10 uF 25 V X7R" H 10065 2955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 9988 2850 50  0001 C CNN
 F 3 "~" H 9950 3000 50  0001 C CNN
+F 4 "Populate if necessary" H 9950 3000 50  0001 C CNN "Comments"
+F 5 "963-TMK316AB7106KL-T" H 9950 3000 50  0001 C CNN "DPN"
+F 6 "Mouser" H 9950 3000 50  0001 C CNN "Distributor"
+F 7 "TMK316AB7106KL-T" H 9950 3000 50  0001 C CNN "MPN"
+F 8 "Taiyo Yuden" H 9950 3000 50  0001 C CNN "Manufacturer"
 	1    9950 3000
 	1    0    0    -1  
 $EndComp
@@ -1564,9 +1598,14 @@ L Device:C C12
 U 1 1 5E9C56BA
 P 9650 3000
 F 0 "C12" H 9765 3046 50  0000 L CNN
-F 1 "C" H 9765 2955 50  0000 L CNN
+F 1 "10 uF 25 V X7R" H 9765 2955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 9688 2850 50  0001 C CNN
 F 3 "~" H 9650 3000 50  0001 C CNN
+F 4 "Populate if necessary" H 9650 3000 50  0001 C CNN "Comments"
+F 5 "963-TMK316AB7106KL-T" H 9650 3000 50  0001 C CNN "DPN"
+F 6 "Mouser" H 9650 3000 50  0001 C CNN "Distributor"
+F 7 "TMK316AB7106KL-T" H 9650 3000 50  0001 C CNN "MPN"
+F 8 "Taiyo Yuden" H 9650 3000 50  0001 C CNN "Manufacturer"
 	1    9650 3000
 	1    0    0    -1  
 $EndComp
