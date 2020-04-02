@@ -1,4 +1,4 @@
-# CASE Folkrace Car
+# CASE Folkrace Car - laZEr
 
 ## The 2020 Folkrace car project
  A car developed for the main focus of evaluationg, methos for producing a fun and educational car for the Robot SM Folkrace class.
