@@ -118,9 +118,12 @@ L Analog_ADC:ADS1115IDGS U1
 U 1 1 5E77ACD6
 P 3150 9800
 F 0 "U1" H 2900 10250 50  0000 C CNN
-F 1 "ADS1115IDGS" H 3450 9450 50  0000 C CNN
+F 1 "ADS1015BQDGSRQ1" H 2750 10350 50  0000 C CNN
 F 2 "Package_SO:TSSOP-10_3x3mm_P0.5mm" H 3150 9300 50  0001 C CNN
-F 3 "http://www.ti.com/lit/ds/symlink/ads1113.pdf" H 3100 8900 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/ads1015-q1.pdf" H 3100 8900 50  0001 C CNN
+F 4 "Mouser" H 3150 9800 50  0001 C CNN "Distributor"
+F 5 "595-ADS1015BQDGSRQ1" H 3150 9800 50  0001 C CNN "DPN"
+F 6 "ADS1015BQDGSRQ1" H 3150 9800 50  0001 C CNN "MPN"
 	1    3150 9800
 	1    0    0    -1  
 $EndComp
@@ -810,6 +813,10 @@ F 0 "J2" H 1600 7450 50  0000 C CNN
 F 1 "Raspberry_Pi" H 1800 7350 50  0000 C CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical" H 2350 6050 50  0001 C CNN
 F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 2350 6050 50  0001 C CNN
+F 4 "Mouser" H 2350 6050 50  0001 C CNN "Distributor"
+F 5 "485-2222" H 2350 6050 50  0001 C CNN "DPN"
+F 6 "Adafruit: 2222" H 2350 6050 50  0001 C CNN "MPN"
+F 7 "Adafruit 2223 also available if there is a need for headers on top" H 2350 6050 50  0001 C CNN "Comments"
 	1    2350 6050
 	1    0    0    -1  
 $EndComp
