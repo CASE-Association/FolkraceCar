@@ -2,11 +2,11 @@
 import pyrealsense2 as rs
 from numpy.linalg import svd, det
 import multiprocessing as mp
-from module.ImageHandler import *
+from module.imagehandler import *
 import numpy as np
 import sys
-from module.ImageHandler import Camera
-from module.CONST import *
+from module.imagehandler import Camera
+from module.config import *
 
 
 class PathFinder:

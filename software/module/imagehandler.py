@@ -4,7 +4,7 @@ import math
 import time
 import pyrealsense2 as rs
 import numpy as np
-from module.CONST import *
+from module.config import *
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):

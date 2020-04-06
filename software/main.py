@@ -11,10 +11,10 @@ TODO
     Get rpm input to work
     hw test
 """
-from module.Car_Handler import *
-from module.PathFinder import *
+from module.carhandler import *
+from module.pathplanner import *
 from module.servo import *
-from module.CONST import *
+from module.config import *
 from module.fancontroller import *
 import time
 import os

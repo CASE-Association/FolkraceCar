@@ -32,7 +32,7 @@ class Servo:
         dutycycle value is from 0 to 100,
         value from controller is -1 to 1
         """
-        # at 0 we want to pulse to be 1.5 Ms -> 0.075 dutycycle
+        # at 0 we want to pulse to be 1.5 Ms -> 0.075 duty cycle
 
         value = ((value + 1) / 2)  # now 0-1
         value = value * (0.1 - 0.05) + 0.05
