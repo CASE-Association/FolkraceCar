@@ -5,38 +5,41 @@ import RPi.GPIO as GPIO
 import numpy as np
 from software.module.servo import Servo
 
+
 #  todo
 #   convert rpm control to speed control
 #   convert speed output to control pwm_pin instead
 
 
 class SpeedControl:
-    def __init__(self, tacho_pin, sample_interval=0.01, kp=0.005, ki=0.05, motor_wheel_rpm_ratio=0.5, verbose=False):
+    def __init__(self, tacho_pin, sample_interval=0.2, kp=30, ki=50, verbose=False):
+
+        # extrinsics
+        self.max_speed = 10  # [m/s]
+        self.verbose = verbose
+        self.process = None
+        self.wheel_diameter = 0.5  # [m]
+
         # intrinsics
-        self._speed = mp.Value('d', 0.0)  # Calculated speed, init speed 0.0
-        self._target_speed = mp.Value('d', 0.0)  # the speed that is requested  # todo change from rpm to m/s
-        self._power = mp.Value('i',
-                               0)  # the controller power variable, span [-100, 100]% where -100 is full power in reverse direction.
+        self._speed = mp.Value('d', 0.0)  # Calculated speed, init speed 0.0 [m/s]
+        self._target_speed = mp.Value('d', 0.0)  # the speed that is requested  # [m/s]
+        self._power = mp.Value('i', 0)  # the controller power variable, span [-100, 100]%
         self._pin = tacho_pin
-        self._motor_wheel_rpm_ratio = motor_wheel_rpm_ratio  # the ratio between motor axle speed and wheel rpm
+        self._wheel_circumference = self.wheel_diameter * np.pi  # [m]
+        self._motor_wheel_rpm_ratio = 3  # the ratio between motor axle speed and wheel rpm [Estimation]
         self._run = mp.Value('i', 1)
 
         # Speed variables
         self._pulse = 0
-        self._ppr = 0.2  # Pulse/revolution
+        self._ppr = 17  # Pulse/ wheel revolution  (est 1pulse/11mm)
         self._rpm = 0
         self._t_last_count = 0  # time of last count
 
-        # PI control values  # todo implement MPC!put
+        # PI control values  # todo implement MPC!
         self._kp = kp
         self._ki = ki
         self._sample_interval = sample_interval  # sample time in seconds
-        self._windup_guard_val = 100  # Maximum Integral actuation
-
-        # extrinsics
-        self.max_rpm = 10000
-        self.verbose = verbose
-        self.p = None
+        self._windup_guard_val = 20  # Maximum Integral actuation
 
     @property
     def speed(self):
@@ -63,39 +66,29 @@ class SpeedControl:
 
     def start(self):
         # Create speed controller Process
-        self.p = mp.Process(target=self.run, args=(self._speed, self._target_speed, self._power,))
+        self.process = mp.Process(target=self.run, args=(self._speed, self._target_speed, self._power,))
         # Start speed controller
-        self.p.start()
+        self.process.start()
 
     def end(self):
-        if self.p is not None:
+        if self.process is not None:
             self._run.value = 0
             time.sleep(0.5)
-            if self.p.is_alive():
-                self.p.terminate()
+            if self.process.is_alive():
+                self.process.terminate()
                 if self.verbose:
                     print('SpeedController was terminated')
             elif self.verbose:
-                print('SpeedController have ended with exitcode({})'.format(self.p.exitcode))
+                print('SpeedController have ended with exitcode({})'.format(self.process.exitcode))
 
     def set_speed(self, speed):
-        self._target_speed.value = np.clip(speed, -self.max_rpm, self.max_rpm)
+        self._target_speed.value = np.clip(speed, -self.max_speed, self.max_speed)
 
-    def get_rpm_old(self):  # todo look into using callback
-        t_start = time.perf_counter()
-        state = GPIO.input(self._pin)
-        while GPIO.input(self._pin) == state:  # wait for input to change
-            if time.perf_counter() - t_start > 0.1:  # took more than 100ms to change state, return rmp=0
-                return 0.0
-        t_end = time.perf_counter()
-        dt = t_end - t_start
-        rpm = 1 / dt
-        return rpm
-
-    def get_rpm(self):
+    def _get_speed(self):
         """
-        Get how many pulses since last count and divide by time-delta to get rpm.
-        :return: Motor RPM
+        Get how many pulses since last count and divide by time-delta to get w/s.
+        Multiply w/s with wheel circumference to the speed in m/s.
+        :return: car speed in m/s
         """
         t_now = time.perf_counter()
         delta_t = t_now - self._t_last_count
@@ -105,8 +98,9 @@ class SpeedControl:
             self._pulse = 0
         else:
             return 0.0
-        rpm = p * self._ppr * (60 / delta_t)  # multiply by 60 and ppr to get RPM
-        return rpm
+        rps = (p / self._ppr) * delta_t  # wheel rotations per second.
+        mps = rps * self._wheel_circumference
+        return mps
 
     def _fault_guard(self, power, timeout=1, safemode_power=10):
         """
@@ -119,8 +113,8 @@ class SpeedControl:
         if power != 0 and self._rpm == 0 and time.perf_counter() - self._t_last_count > timeout:
             if self.verbose and power != safemode_power:
                 pass
-                #t = time.strftime("%H:%M:%S", time.gmtime())
-                #print('[{}]: Speed Controller in safe mode!\n'
+                # t = time.strftime("%H:%M:%S", time.gmtime())
+                # print('[{}]: Speed Controller in safe mode!\n'
                 #      'Power applied but no movement detected!\n'
                 #      'Maximum power:{}%'.format(t, safemode_power))
             return np.clip(power, -safemode_power, safemode_power)
@@ -134,12 +128,13 @@ class SpeedControl:
         self._pulse += 1
         #print(channel, self._pulse)
 
-    def run(self, speed, target_speed, power):
+    def run(self, speed, target_speed, power, alpha=0.9):
         """
         Speed controller loop function
         :param speed: Output current speed [multiprocessing.Value]
         :param target_speed: Input controller target speed [multiprocessing.Value]
         :param power: Output controller power
+        :param alpha: Smoothing factor of speed reading
         :return: None
         """
 
@@ -147,14 +142,17 @@ class SpeedControl:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # todo remove when hw pull-up implemented
-        GPIO.add_event_detect(self._pin, GPIO.BOTH, callback=self._cb_new_pulse)
+        GPIO.add_event_detect(self._pin, GPIO.RISING, callback=self._cb_new_pulse)
 
+        # init PI values
         t_last = time.perf_counter()
+        self._t_last_count = t_last
         I = 0
+        s = 0
         while self._run:
-
             # PI control
-            s = self.get_rpm()  # Get angle velocity
+            new_s = self._get_speed() # Get car speed
+            s = alpha * new_s + (1 - alpha) * s  # Smooth speed reading
             speed.value = s
             err = target_speed.value - s
             t_now = time.perf_counter()
@@ -162,35 +160,44 @@ class SpeedControl:
             # calculate integral part
             I += err * delta_t
             I = np.clip(I, -self._windup_guard_val, self._windup_guard_val)  # prevent integration windup
-            t_last = t_now
 
             # Calculate power output and constrain to [-100, 100]%
             pwr = np.clip(int(self._kp * err + self._ki * I), -100, 100)
-            power.value = self._fault_guard(pwr, timeout=1, safemode_power=10)  # Check if safe to give power.
+            #pwr = self._fault_guard(pwr, timeout=1, safemode_power=10)  # Check if safe to give power.
+            power.value = pwr
+            t_last = t_now
 
-            time.sleep(self._sample_interval)
+            # sleep for reminder of sampling time.
+            t_sleep = float(np.clip((2 * self._sample_interval - delta_t), 0, self._sample_interval))
+            time.sleep(t_sleep)
 
 
 def main():
     sc = SpeedControl(tacho_pin=36, verbose=True)
-    sc.set_speed(100)
+    sc.set_speed(0.5)
     sc.start()
+    # init esc
     speed_q = mp.Queue()
     motor = Servo(speed_q, 32)
     motor.start()
-
     speed_q.put(-10)  # esc unlocking
     time.sleep(0.1)
 
-    while True:
+    t_start = time.perf_counter()
+
+    test_duration = 5  # [s]
+
+    while time.perf_counter() < t_start + test_duration:
         try:
-            print('Time: {}  Speed: {}, Power: {}'.format(round(time.perf_counter(), 0), round(sc.speed, 2), sc.power))
+            print('Time: {:2.0f}s,  Speed: {:4.2f}m/s, Power: {}%'
+                  .format(round(time.perf_counter(), 0), sc.speed, sc.power))
             time.sleep(0.05)
-            speed_q.put(np.clip(sc.speed, 0, 30))
+            speed_q.put(np.clip(sc.power, 0, 50))  # apply power
         except KeyboardInterrupt:
             break
     sc.end()
     motor.end()
+
 
 if __name__ == '__main__':
     main()

@@ -120,7 +120,6 @@ def main():
                 speed_servo.q.put(speed)
                 _t_last_update = time.perf_counter()
 
-
     except KeyboardInterrupt:
         pass
 
