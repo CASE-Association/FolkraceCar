@@ -10,9 +10,8 @@ class Servo:
         self.q = queue
         self.servopin = pin
         self.verbose = verbose
+
         # intrinsic const, must be set before start!
-        self.ub = 90  # angle upper bound
-        self.lb = -90  # anfle lower bound
         self.ang_offset = 0
         self.dc = 0
 

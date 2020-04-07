@@ -19,6 +19,7 @@ class FanController:
     def _run(self):
         dt = 5  # update delay
         GPIO.setmode(GPIO.BOARD)
+        GPIO.setwarnings(False)
         GPIO.setup(self._fan_pin, GPIO.OUT)  # step
         fan_state = GPIO.HIGH
         while True:

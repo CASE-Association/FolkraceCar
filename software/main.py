@@ -60,20 +60,18 @@ def main():
     # init
 
     # Create a fan controller
-    #FanController(fan_pin=22)
+    FanController(fan_pin=FAN, on_temp=55, off_temp=45)
 
     # Create Speed controller
-    sc = SpeedControl(tacho_pin=36)
+    sc = SpeedControl(tacho_pin=HALL_SENSOR)
     sc.start()
 
     #   Car is the process handling the dynamics of the car
     car = CarHandler(car_size=car_size, camera_car_offset=camera_car_offset)
 
     #   Actuator initialization  # todo move to car_handler
-    steer_servo = Servo(pin=32, queue=Queue(), verbose=True)
-    speed_servo = Servo(pin=33, queue=Queue(), verbose=True)
-    steer_servo.ang_offset, steer_servo.ub, steer_servo.lb = 0, 45, -45
-    speed_servo.ang_offset, steer_servo.ub, steer_servo.lb = 0, 45, -45
+    steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=True)
+    speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=True)
     steer_servo.start()
     speed_servo.start()
 
@@ -90,32 +88,29 @@ def main():
 
     _fps = 30
     _phi = 0.0
-    opt_theta = 0.0
-    opt_phi = 0.0
-    dist = 0
-    _t_last_reading = 0.0
-    _t_last_update = 0.0
-    _max_speed = 180
+    _t_last_reading = _t_last_update = time.perf_counter()
+    _max_speed = 90
     try:
         while True:
             q_data = q_path.get()
-            _max_dist, theta = q_data.get('dist', -1), q_data.get('theta', 0.0)
+            dist, theta = q_data.get('dist', -1), q_data.get('theta', 0.0)
 
             _t_new_reading = q_data.get('last_reading', 0)
             hz = 1 / (_t_new_reading - _t_last_reading)
             _t_last_reading = _t_new_reading
             _fps = (0.9 * _fps + 0.1 * hz)
-            dist = (0.9 * dist + 0.1 * _max_dist)
-            opt_theta = round(0.99 * opt_theta + 0.01 * theta, 1)
+            opt_theta = round( theta, 1)
 
             if _t_last_update + 0.05 < time.perf_counter():
                 os.system('clear')
                 print('\n\033[92m                 CASE FolkRacer\033[0m')
                 print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
-                      .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
+                      .format(round(dist, 2), opt_theta, 0.0, round(_fps, 2)))
                 _turn = min(max(round(theta), -25), 25)
-                print('|' * (25 + _turn), '\033[92mA\033[0m', '|' * (25 - _turn))
-                print('Steer: {:2.0f}deg \nSpeed: {:2.3f}m/s \nPower: {}%'.format(theta*4, sc.speed, sc.power))
+                print('|' * (25 + _turn), '\033[92m{}\033[0m'.format(('↑', '↓')[sc.speed < 0]), '|' * (25 - _turn))
+                print('Steer: {:2.0f}deg \n'
+                      'Speed: {:2.3f}m/s \n'
+                      'Power: {}%'.format(theta*4, sc.speed, sc.power))
                 print('\nCtrl-C to end')
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
@@ -131,12 +126,11 @@ def main():
         pass
 
     # Cleanup
-
-    car.end()  # end car thread
     q_path.put("END")  # send END msg to shutdown child processes
+    car.end()  # end car thread
     speed_servo.end()
     steer_servo.end()
-    #PP.join()  # todo fix process staying alive
+
 
     print('\n\033[92m Main process ended\033[0m')
 

@@ -1,4 +1,3 @@
-
 import pyrealsense2 as rs
 from numpy.linalg import svd, det
 import multiprocessing as mp
@@ -145,9 +144,8 @@ class PathFinder:
 
         X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
 
-
         # inlier index vector
-        #I = []
+        # I = []
 
         """
         Basic depth filter (Z)
@@ -193,31 +191,45 @@ class PathFinder:
 
         return p[I]
 
-    def _get_path(self):
-        theta = 0.0
-        tunnel_size = self.car.size[0:3]   # [w h l]
+    def _get_path(self, alpha=0.25):
+        """
+        Get distance and heading to longest path
+        :param alpha: smoothing factor
+        :return: None
+        """
+
+        # todo:
+        #  get theta span depending on furthest distance
+        #  weight non-linear path depending on speed
+
+        theta = None
+        tunnel_size = self.car.size[0:3]  # [w h l_offset]
         verts = self.cam.get_verts()
 
-        _max_dist = 0  # longest found path distance
-        _n_scan_steps = 5
-        for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), _n_scan_steps):
+        max_dist = 0  # longest found path distance
+        n_scan_steps = 15
+
+        for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), n_scan_steps):
 
             # process verts to get inlier points
             inliers = self.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=self.phi)
-
             try:
                 Z = inliers[:, 2]
                 _dist = np.min(Z)
-                if _dist > _max_dist * 1.1:  # Must be more than 10% longer
+                if _dist >= max_dist * 1.25:  # Must be more than 25% longer to change heading
                     theta = _theta
-                    _max_dist = _dist
+                    max_dist = _dist
             except:
                 pass
 
-
         if theta is not None:
-            return _max_dist, theta
-        return 0.0, theta
+            # Smoothing
+            self.theta = alpha * theta + (1 - alpha) * self.theta
+            self.dist = alpha * max_dist + (1 - alpha) * self.dist
+
+
+
+
 
 
 def init_pipe(width=640, height=480, fps=0, dfps=0):
@@ -260,7 +272,7 @@ def path_plan(car, q):
     pp = PathFinder(cam, car)
     while True:
         pp.ground_plane = pp._get_ground_plane()
-        pp.dist, pp.theta = pp._get_path()
+        pp._get_path()
         _t_now = time.perf_counter()
         pp.samplerate = 1 / (_t_now - pp.last_reading)
         pp.last_reading = _t_now
@@ -277,10 +289,9 @@ def path_plan(car, q):
             while not q.empty():  # flush queue
                 q.get()
             q.close()
-            break   # End process
+            break  # End process
         else:
             q.put(tx_msg)  # send data as Queue message
 
     cam.end()
     print('\n\033[92m Path planner ended\033[0m')
-
