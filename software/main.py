@@ -16,6 +16,7 @@ from module.pathplanner import *
 from module.servo import *
 from module.config import *
 from module.fancontroller import *
+from module.speedcontroller import *
 import time
 import os
 
@@ -59,7 +60,11 @@ def main():
     # init
 
     # Create a fan controller
-    FanController(fan_pin=22)
+    #FanController(fan_pin=22)
+
+    # Create Speed controller
+    sc = SpeedControl(tacho_pin=36)
+    sc.start()
 
     #   Car is the process handling the dynamics of the car
     car = CarHandler(car_size=car_size, camera_car_offset=camera_car_offset)
@@ -110,14 +115,16 @@ def main():
                       .format(round(dist, 2), opt_theta, opt_phi, round(_fps, 2)))
                 _turn = min(max(round(theta), -25), 25)
                 print('|' * (25 + _turn), '\033[92mA\033[0m', '|' * (25 - _turn))
-                print('Speed: 00.0')
+                print('Steer: {:2.0f}deg \nSpeed: {:2.3f}m/s \nPower: {}%'.format(theta*4, sc.speed, sc.power))
                 print('\nCtrl-C to end')
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
                 steer = theta * 4
                 # update steer and speed value
-                steer_servo.q.put(steer)
-                speed_servo.q.put(speed)
+                sc.set_speed(speed)
+
+                steer_servo.q.put(np.clip(steer, -90, 90))
+                speed_servo.q.put(np.clip(sc.power, -50, 50))
                 _t_last_update = time.perf_counter()
 
     except KeyboardInterrupt:

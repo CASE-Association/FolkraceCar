@@ -12,7 +12,7 @@ from software.module.servo import Servo
 
 
 class SpeedControl:
-    def __init__(self, tacho_pin, sample_interval=0.2, kp=30, ki=50, verbose=False):
+    def __init__(self, tacho_pin, sample_interval=0.05, kp=500, ki=1000, verbose=False):
 
         # extrinsics
         self.max_speed = 10  # [m/s]
@@ -39,7 +39,7 @@ class SpeedControl:
         self._kp = kp
         self._ki = ki
         self._sample_interval = sample_interval  # sample time in seconds
-        self._windup_guard_val = 20  # Maximum Integral actuation
+        self._windup_guard_val = 150  # Maximum Integration
 
     @property
     def speed(self):
@@ -126,7 +126,7 @@ class SpeedControl:
         :return: None
         """
         self._pulse += 1
-        #print(channel, self._pulse)
+        # print(channel, self._pulse)
 
     def run(self, speed, target_speed, power, alpha=0.9):
         """
@@ -151,7 +151,7 @@ class SpeedControl:
         s = 0
         while self._run:
             # PI control
-            new_s = self._get_speed() # Get car speed
+            new_s = self._get_speed()  # Get car speed
             s = alpha * new_s + (1 - alpha) * s  # Smooth speed reading
             speed.value = s
             err = target_speed.value - s
@@ -161,9 +161,11 @@ class SpeedControl:
             I += err * delta_t
             I = np.clip(I, -self._windup_guard_val, self._windup_guard_val)  # prevent integration windup
 
+            #print('E: {}, P: {}, I: {}'.format(round(err, 2),  int(self._kp * err), int(self._ki * I)))
+
             # Calculate power output and constrain to [-100, 100]%
             pwr = np.clip(int(self._kp * err + self._ki * I), -100, 100)
-            #pwr = self._fault_guard(pwr, timeout=1, safemode_power=10)  # Check if safe to give power.
+            pwr = self._fault_guard(pwr, timeout=1, safemode_power=50)  # Check if safe to give power.
             power.value = pwr
             t_last = t_now
 
@@ -174,25 +176,29 @@ class SpeedControl:
 
 def main():
     sc = SpeedControl(tacho_pin=36, verbose=True)
-    sc.set_speed(0.5)
+    sc.set_speed(0.03)
     sc.start()
     # init esc
     speed_q = mp.Queue()
     motor = Servo(speed_q, 32)
     motor.start()
-    speed_q.put(-10)  # esc unlocking
+    speed_q.put(-1)  # esc unlocking
     time.sleep(0.1)
 
     t_start = time.perf_counter()
 
     test_duration = 5  # [s]
 
+    dt = 0.01
+
     while time.perf_counter() < t_start + test_duration:
         try:
-            print('Time: {:2.0f}s,  Speed: {:4.2f}m/s, Power: {}%'
+            print('Time: {:2.0f}s,  Speed: {:4.3f}m/s, Power: {}%'
                   .format(round(time.perf_counter(), 0), sc.speed, sc.power))
-            time.sleep(0.05)
-            speed_q.put(np.clip(sc.power, 0, 50))  # apply power
+            time.sleep(dt)
+            pwr = np.clip(sc.power, -100, 100)
+            speed_q.put(-pwr)  # apply power [inverted]
+
         except KeyboardInterrupt:
             break
     sc.end()

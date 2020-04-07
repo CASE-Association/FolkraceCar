@@ -72,12 +72,19 @@ class Servo:
 
 if __name__ == "__main__":
 
-    servo = Servo(Queue(), pin=33, verbose=True)
+    servo = Servo(Queue(), pin=32, verbose=True)
     servo.start()
+    i = 1
     try:
-        for i in range(5, 11, 1):
-            servo.q.put(i)
-            time.sleep(2)
+        while True:
+            time.sleep(0.5)
+
+            servo.q.put(i*80 + 10)
+
+            i = -i
+
+
+
     except KeyboardInterrupt:
         pass
 

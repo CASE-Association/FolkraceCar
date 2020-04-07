@@ -139,11 +139,12 @@ class PathFinder:
         #  driving plane
 
         p = verts
-        z_lim = 1.0  # todo get lim from car size like:
+        [w, h, l] = tunnel_size
+        z_lim = l  # todo get lim from car size like:
         # z_lim = self._camera_offset
 
         X, Y, Z = p[:, 0], p[:, 1], p[:, 2]
-        [w, h] = tunnel_size
+
 
         # inlier index vector
         #I = []
@@ -194,22 +195,24 @@ class PathFinder:
 
     def _get_path(self):
         theta = 0.0
-        tunnel_size = self.car.size[0:2]
+        tunnel_size = self.car.size[0:3]   # [w h l]
         verts = self.cam.get_verts()
 
-        _max_dist = 0  # longest found path distace
+        _max_dist = 0  # longest found path distance
         _n_scan_steps = 5
         for _theta in range(int(self.theta - self.fov / 2), int(self.theta + self.fov / 2 + 1), _n_scan_steps):
 
             # process verts to get inlier points
             inliers = self.process_verts(verts, tunnel_size=tunnel_size, theta=_theta, phi=self.phi)
 
-            if inliers.any():
+            try:
                 Z = inliers[:, 2]
                 _dist = np.min(Z)
                 if _dist > _max_dist * 1.1:  # Must be more than 10% longer
                     theta = _theta
                     _max_dist = _dist
+            except:
+                pass
 
 
         if theta is not None:
