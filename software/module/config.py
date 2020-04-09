@@ -14,6 +14,7 @@ frame_width = 424
 frame_height = 240
 fps = 0
 dfps = 90
+FOV = 50  # [deg]
 camera_car_offset = [0.01, 0,
                      -2.05]  # The offset from camera to car pivot point. [w h l] [m]
 #car_size = [0.2, 0.1, 0.3, 0.05]  # [w h l r]
@@ -30,3 +31,8 @@ HALL_SENSOR = 36
 
 # Image config
 IMG_SIZE = (640, 480, 3)
+
+DECIMATION = 3
+
+# PathFinder
+PATH_SMOOTHING = 0.25

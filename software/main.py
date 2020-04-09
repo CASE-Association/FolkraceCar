@@ -58,29 +58,26 @@ def main():
     # init
 
     # Create a fan controller
-    FanController(fan_pin=FAN, on_temp=55, off_temp=45)
+    #FanController(fan_pin=FAN, on_temp=55, off_temp=45)  # todo activate when needed
 
     # Create Speed controller  # todo move to CarHandler
     sc = SpeedControl(tacho_pin=HALL_SENSOR)
-    sc.start()
+    #sc.start()  # todo activate when needed
 
     #   CarHandler is the process handling the dynamics of the car
     car = CarHandler(car_size=car_size, camera_car_offset=camera_car_offset)
+    # car.start() # todo activate when needed
 
     #   Actuator initialization  # todo move to CarHandler
-    steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=True)
-    speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=True)
+    steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=True, name='Steer_servo')
+    speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=True, name='Motor_servo')
     steer_servo.start()
     speed_servo.start()
 
-    q_path = mp.Queue()
-    PP = mp.Process(target=path_plan, args=(car, q_path), name='path_planners')
-    # Start threads
-    # Car.start()
-    # run the path planner as daemon so it terminates with the main process
-    PP.daemon = True
-    PP.start()
-    time.sleep(1)  # give process time to start
+    # PathFinder initialization and start
+    pf = PathFinder(car)
+    pf.start()
+
 
     #  Test code
 
@@ -90,22 +87,29 @@ def main():
     _max_speed = 90
     try:
         while True:
-            q_data = q_path.get()
+            # Get data from PathFinder. Block until new data to prevent unnecessary calculations
+            q_data = pf.q.get()
+
+            # Get path data
             dist, theta = q_data.get('dist', -1), q_data.get('theta', 0.0)
 
+            # get timestamp of last reading
             _t_new_reading = q_data.get('last_reading', 0)
+            lag = (time.perf_counter() - _t_new_reading) * 1000  # reading delay in ms.
             hz = 1 / (_t_new_reading - _t_last_reading)
             _t_last_reading = _t_new_reading
             _fps = (0.9 * _fps + 0.1 * hz)
-            opt_theta = round( theta, 1)
+            opt_theta = round(theta, 1)
 
             if _t_last_update + 0.05 < time.perf_counter():
                 os.system('clear')
-                print('\n\033[92m                 CASE FolkRacer\033[0m')
-                print('Dist {:4.2f}m | Theta  {:5.1f}deg | Phi {:5.1f}|  f: {:5.2f}Hz'
-                      .format(round(dist, 2), opt_theta, 0.0, round(_fps, 2)))
+                print('\n\033[92m                    CASE FolkRacer\033[0m')
+                print('Dist {:4.2f}m | Theta {:5.1f}deg | Lag {:4.1f}ms | f: {:5.2f}Hz'
+                      .format(round(dist, 2), opt_theta, lag, round(_fps, 2)))
                 _turn = min(max(round(theta), -25), 25)
+                print('\033[92m{}\033[0m'.format('-'*53))
                 print('|' * (25 + _turn), '\033[92m{}\033[0m'.format(('↑', '↓')[sc.speed < 0]), '|' * (25 - _turn))
+                print('\033[92m{}\033[0m'.format('-'*53))
                 print('Steer: {:2.0f}deg \n'
                       'Speed: {:2.3f}m/s \n'
                       'Power: {}%'.format(theta*4, sc.speed, sc.power))
@@ -124,8 +128,8 @@ def main():
         pass
 
     # Cleanup
-    q_path.put("END")  # send END msg to shutdown child processes
-    car.end()  # end car thread
+    pf.end()
+    car.end()
     speed_servo.end()
     steer_servo.end()
 

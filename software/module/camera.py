@@ -2,9 +2,10 @@
 import cv2
 import math
 import time
+import sys
 import pyrealsense2 as rs
 import numpy as np
-from module.config import *
+import module.config as conf
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):
@@ -72,6 +73,12 @@ class Camera:
             self.scale = depth_sensor.get_depth_scale()
         except RuntimeError as err:
             print(err)
+
+    def set_decimation(self, decimation=3):
+        try:
+            self.decimate.set_option(rs.option.filter_magnitude, 2 ** decimation)
+        except Exception as err:
+            print('Could not set decimation! \nError: ', err)
 
 
     def mouse_cb(self, event, x, y, flags, param):
@@ -390,9 +397,43 @@ class Camera:
         self.pipe.stop()
 
 
-out = np.empty((frame_height, frame_width, 3), dtype=np.uint8)
+out = np.empty((conf.frame_height, conf.frame_width, 3), dtype=np.uint8)
 
-state = AppState(camera_car_offset)
+state = AppState(conf.camera_car_offset)
+
+def init_pipe(width=640, height=480, fps=0, dfps=0):
+    """
+    Setup function for Realsense pipe
+    :param width: of camera stream
+    :param height: of camera stream
+    :param fps: of camera stream
+    :return: created pipeline
+    """
+    # Configure depth and color streams
+    try:
+        pipeline = rs.pipeline()
+        config = rs.config()
+        if dfps > 0:
+            config.enable_stream(rs.stream.depth, width, height, rs.format.z16, dfps)
+        if fps > 0:
+            config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, fps)
+
+        # Start streaming
+        pipeline.start(config)
+    except RuntimeError as err:
+        print(err)
+        sys.exit()  # todo fix propper exit
+
+    return pipeline
+
+def init_camera():
+    try:
+        pipe = init_pipe(conf.frame_width, conf.frame_height, conf.fps, conf.dfps)
+        camera = Camera(pipe)
+        camera.set_decimation(conf.DECIMATION)
+    except Exception as err:
+        print('Could not init camera!\nError: ', err)
+    return camera
 
 def project(v):
     """project 3d vector array to 2d"""

@@ -6,10 +6,11 @@ import RPi.GPIO as GPIO
 
 
 class Servo:
-    def __init__(self, queue, pin, verbose=False):
+    def __init__(self, queue, pin, verbose=False, name='Servo'):
         self.q = queue
         self.servopin = pin
         self.verbose = verbose
+        self._name = name
 
         # intrinsic const, must be set before start!
         self.ang_offset = 0
@@ -53,13 +54,13 @@ class Servo:
                 inp = queue.get()  # get queue input
                 if inp == 'END':
                     queue.close()
-                    print('\n\033[92m Servo process ended\033[0m')
+                    print('\n\033[92m {} process ended\033[0m'.format(self._name))
                     break
                 elif -90 <= inp <= 90:
                     self.dc = self.map(inp/180 + self.ang_offset/180)  # normalize angle and map to dutycycle
                     self.pwm.ChangeDutyCycle(self.dc)  # todo contol values
                     if self.verbose:
-                        print("[ServoPin", self.servopin, "] Dutycycle changed to: ",
+                        print("[Servo:", self._name, "] Dutycycle changed to: ",
                               round(inp, 2), "deg, dc= ", round(self.dc, 2))
                 else:
                     if inp.any() and self.verbose:
