@@ -6,13 +6,14 @@ Configuration module
 # todo change to sys/argument varables
 
 WEBGUI = True
+STREAM = True
 IMAGERAW = WEBGUI  # generate raw image if Web GUI is used
 VERTSRAW = False
 
 
 frame_width = 424
 frame_height = 240
-fps = 30
+fps = (0, 60)[IMAGERAW]  # disable color if not needed
 dfps = 90
 FOV = 50  # [deg]
 camera_car_offset = [0.01, 0,
@@ -30,7 +31,7 @@ HALL_SENSOR = 36
 
 
 # Image config
-IMG_SIZE = (640, 480, 3)
+IMG_SIZE = (240, 424, 3)
 
 DECIMATION = 3
 

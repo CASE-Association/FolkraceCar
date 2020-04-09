@@ -2,7 +2,7 @@ from numpy.linalg import svd, det
 import multiprocessing as mp
 from module.camera import *
 import numpy as np
-from module.camera import Camera
+from threading import Thread
 import module.config as conf
 
 
@@ -226,6 +226,19 @@ class PathFinder:
             self.theta = alpha * theta + (1 - alpha) * self.theta
             self.dist = alpha * max_dist + (1 - alpha) * self.dist
 
+    def _image_extraction(self):
+        """
+        Image extraction thread
+        :return: None
+        """
+        # todo move to thread in Camera class
+        try:
+            while True:
+                shared.raw_image = shared.nparray_to_rawarray(self.cam.get_image())
+                shared.t_raw_image.value = time.perf_counter()
+        except Exception as err:
+            print('Error in image extraction thread: ', err)
+
     def run(self, q):
         """
         Main Path planner Process
@@ -234,9 +247,14 @@ class PathFinder:
         """
         rx_msg = tx_msg = []
 
-
         # Init RealSense camera with threading
         self.cam = init_camera()
+
+        # If Raw image is requested, start tread for image extraction
+        if conf.IMAGERAW:
+            ie = Thread(target=self._image_extraction)
+            ie.daemon = True
+            ie.start()
 
         while True:
             # get RX data from queue

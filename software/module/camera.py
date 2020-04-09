@@ -1,4 +1,3 @@
-
 import cv2
 import math
 import time
@@ -8,6 +7,7 @@ import numpy as np
 from threading import Thread
 import module.config as conf
 import module.shared as shared
+
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):
@@ -46,6 +46,7 @@ class AppState:
     def pivot(self):
         return self.translation + np.array((0, 0, self.distance), dtype=np.float32)
 
+
 class Camera:
 
     # todo Streamline and cleanup
@@ -66,7 +67,6 @@ class Camera:
         # Data from camera
         self.image = None
         self.verts = None
-
 
         # Setup camera
         try:
@@ -183,12 +183,13 @@ class Camera:
         :return:
         """
         # Wait for a coherent pair of frames: depth and color
+        #frames = self.pipe.poll_for_frames()
         frames = self.pipe.wait_for_frames()
 
         color_frame = frames.get_color_frame()
 
         color_image = np.asanyarray(color_frame.get_data())
-
+        self.image = color_image
         return color_image
 
     def get_pointcloud(self):
@@ -249,7 +250,7 @@ class Camera:
 
         return texcoords
 
-    def visualizer(self, draw=None, path_planner=None, Car = None, Blinde=False):
+    def visualizer(self, draw=None, path_planner=None, Car=None, blinde=False):
         """
         OpenCV and Numpy Point cloud Software Renderer
 
@@ -317,7 +318,6 @@ class Camera:
             if 'axes' in draw:
                 axes(out, view(np.zeros((1, 3))), self.state.rotation, size=0.1, thickness=1)
 
-
             if not self.state.scale or out.shape[:2] == (self.h, self.w):
                 pointcloud(out, verts, texcoords, color_source)
             else:
@@ -343,7 +343,8 @@ class Camera:
 
             # fixme get np.dot to work and hardcoded +2 offset
             if 'car' in draw and Car:
-                car_model(out, pos=[self.state.offset[0], self.state.offset[1], self.state.offset[2] + 2], car_size=Car.size)
+                car_model(out, pos=[self.state.offset[0], self.state.offset[1], self.state.offset[2] + 2],
+                          car_size=Car.size)
 
             frustum(out, self.depth_intrinsics)
 
@@ -352,14 +353,15 @@ class Camera:
 
             dt = time.time() - now
 
-            if Blinde:
+            if blinde:
                 cv2.setWindowTitle(
                     self.state.WIN_NAME, "FolkraceCar | Blind mode")
             else:
                 try:
                     cv2.setWindowTitle(
                         self.state.WIN_NAME, "FolkraceCar | (%dx%d) %dFPS (%.2fms) %s" %
-                                        (self.w, self.h, 1.0 / dt, dt * 1000, "PAUSED" if self.state.paused else ""))
+                                             (self.w, self.h, 1.0 / dt, dt * 1000,
+                                              "PAUSED" if self.state.paused else ""))
                     cv2.putText(out, 'Key: [p] Pause '
                                      '[r] Reset View '
                                      '[d] Decimation '
@@ -412,7 +414,8 @@ def init_pipe(width=640, height=480, fps=0, dfps=0):
     Setup function for Realsense pipe
     :param width: of camera stream
     :param height: of camera stream
-    :param fps: of camera stream
+    :param fps: framerate of color stream
+    :param dfps: framerate of depth stream
     :return: created pipeline
     """
     # Configure depth and color streams
@@ -431,6 +434,7 @@ def init_pipe(width=640, height=480, fps=0, dfps=0):
         sys.exit()  # todo fix propper exit
 
     return pipeline
+
 
 def init_camera():
     try:
@@ -633,6 +637,6 @@ def car_model(out, pos=None, car_size=None, rotation=np.eye(3), color=(0x40, 0x1
     side = np.sign(-view(pos + np.dot((x, 0, 0), rotation))[0]).astype(int)
     # fixme sidechange not considering width of car
     # Generate car
-    #wheel(-side)
+    # wheel(-side)
     body()
-    #wheel(side)
+    # wheel(side)

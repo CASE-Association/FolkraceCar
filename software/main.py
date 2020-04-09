@@ -15,6 +15,8 @@ from module.servo import *
 from module.config import *
 from module.fancontroller import *
 from module.speedcontroller import *
+import module.shared as shared
+from threading import Thread
 import time
 import os
 
@@ -50,6 +52,22 @@ def plot_pointcloud(points, only_closest=False, step=3):
     return cv2.applyColorMap(gray, cv2.COLORMAP_JET)
 
 
+def show_raw_image():
+    i = 1
+    try:
+        while True:
+            img = shared.rawarray_to_nparray(shared.raw_image, conf.IMG_SIZE)
+            # save image
+            cv2.imwrite('/home/pi/CASE/img/Stream/img' + str(i) + '.jpg', img)
+            if i < 10:
+                i += 1
+            else:
+                i = 1
+            time.sleep(0.1)
+    except Exception as err:
+        print('Could not show feed! \nError: ', err)
+
+
 def main():
     """
     Main Folkrace function
@@ -80,6 +98,11 @@ def main():
 
 
     #  Test code
+    if STREAM:
+        image_show = Thread(target=show_raw_image)
+        image_show.daemon = True
+        image_show.start()
+
 
     _fps = 30
     _phi = 0.0
@@ -128,6 +151,7 @@ def main():
                 steer_servo.q.put(np.clip(steer, -90, 90))
                 speed_servo.q.put(np.clip(sc.power, -50, 50))
                 _t_last_update = time.perf_counter()
+
 
     except KeyboardInterrupt:
         pass
