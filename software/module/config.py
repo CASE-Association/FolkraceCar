@@ -6,7 +6,7 @@ Configuration module
 # todo change to sys/argument varables
 
 WEBGUI = True
-STREAM = True
+STREAM = False
 IMAGERAW = WEBGUI  # generate raw image if Web GUI is used
 VERTSRAW = False
 

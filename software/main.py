@@ -8,6 +8,8 @@
 
 TODO
     Get ADC to work
+    Get Webcontrol to work
+    Get OLED screen to work
 """
 from module.carhandler import *
 from module.pathplanner import *
@@ -19,6 +21,8 @@ import module.shared as shared
 from threading import Thread
 import time
 import os
+
+from module.WebControll import web
 
 
 def plot_pointcloud(points, only_closest=False, step=3):
@@ -87,14 +91,19 @@ def main():
     # car.start() # todo activate when needed
 
     #   Actuator initialization  # todo move to CarHandler
-    steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=True, name='Steer_servo')
-    speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=True, name='Motor_servo')
+    steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=False, name='Steer_servo')
+    speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=False, name='Motor_servo')
     steer_servo.start()
     speed_servo.start()
 
     # PathFinder initialization and start
     pf = PathFinder(car)
     pf.start()
+
+    # start web server
+    if WEBGUI:
+        wp = Process(target=web.main)
+        wp.start()
 
 
     #  Test code
@@ -122,14 +131,14 @@ def main():
                 continue  # no new data
             lag = (time.perf_counter() - _t_new_reading) * 1000  # reading delay in ms.
             _t_last_reading = _t_new_reading
-            _fps = (0.9 * _fps + 0.1 * hz)
+            _fps = (0.99 * _fps + 0.01 * hz)
 
             # Get path data
             dist, theta = q_data.get('dist', -1), q_data.get('theta', 0.0)
 
             opt_theta = round(theta, 1)
 
-            if _t_last_update + 0.05 < time.perf_counter():
+            if _t_last_update + 0.01 < time.perf_counter():
                 os.system('clear')
                 print('\n\033[92m                    CASE FolkRacer\033[0m')
                 print('Dist {:4.2f}m | Theta {:5.1f}deg | Lag {:4.1f}ms | f: {:5.2f}Hz'
