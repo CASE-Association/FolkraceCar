@@ -15,7 +15,7 @@ else:
 
 # Raw Verts array
 if VERTSRAW:
-    pass  # todo
+    raw_verts = None
 
 # Speed
 # todo

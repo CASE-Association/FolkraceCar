@@ -90,15 +90,20 @@ def main():
             # Get data from PathFinder. Block until new data to prevent unnecessary calculations
             q_data = pf.q.get()
 
+            # get timestamp of last reading
+            _t_new_reading = q_data.get('last_reading', 0)
+            dt = _t_new_reading - _t_last_reading
+            if dt:
+                hz = 1/dt
+            else:
+                continue  # no new data
+            lag = (time.perf_counter() - _t_new_reading) * 1000  # reading delay in ms.
+            _t_last_reading = _t_new_reading
+            _fps = (0.9 * _fps + 0.1 * hz)
+
             # Get path data
             dist, theta = q_data.get('dist', -1), q_data.get('theta', 0.0)
 
-            # get timestamp of last reading
-            _t_new_reading = q_data.get('last_reading', 0)
-            lag = (time.perf_counter() - _t_new_reading) * 1000  # reading delay in ms.
-            hz = 1 / (_t_new_reading - _t_last_reading)
-            _t_last_reading = _t_new_reading
-            _fps = (0.9 * _fps + 0.1 * hz)
             opt_theta = round(theta, 1)
 
             if _t_last_update + 0.05 < time.perf_counter():

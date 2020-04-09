@@ -12,7 +12,7 @@ VERTSRAW = False
 
 frame_width = 424
 frame_height = 240
-fps = 0
+fps = 30
 dfps = 90
 FOV = 50  # [deg]
 camera_car_offset = [0.01, 0,

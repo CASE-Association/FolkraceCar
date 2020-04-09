@@ -20,7 +20,7 @@ class PathFinder:
         self.theta = 0.0  # steering direction
         self.phi = 0.0  # incline angle
         self.dist = -1.0  # distance to object
-        self.last_reading = 0.0  # last valid reading
+        self.t_last_data = 0.0  # last valid data reading
         self.samplerate = 0.0
         self.fov = conf.FOV  # FieldOfView
         self.q = mp.Queue()  # message queue
@@ -202,7 +202,7 @@ class PathFinder:
 
         theta = None
         tunnel_size = self._car.size[0:3]  # [w h l_offset]
-        self.verts = self.cam.get_verts()
+        #self.verts = self.cam.get_verts()
         self.ground_plane = self._get_ground_plane()
 
         max_dist = 0  # longest found path distance
@@ -232,19 +232,23 @@ class PathFinder:
         :param q: message queue
         :return: none
         """
-        rx_msg = []
+        rx_msg = tx_msg = []
 
-        # Init RealSense camera
+
+        # Init RealSense camera with threading
         self.cam = init_camera()
 
         while True:
             # get RX data from queue
             # todo
 
+            # get verts from camera
+            self.verts = self.cam.get_verts()
+
             # Get sample rate
             _t_now = time.perf_counter()
-            self.samplerate = 1 / (_t_now - self.last_reading)
-            self.last_reading = _t_now
+            self.samplerate = 1 / (_t_now - self.t_last_data)
+            self.t_last_data = _t_now
 
             # Get new path
             self._get_path()
@@ -254,12 +258,12 @@ class PathFinder:
                       'rate': self.samplerate,
                       'theta': self.theta,
                       'ground': self.ground_plane,
-                      'last_reading': self.last_reading}
+                      'last_reading': self.t_last_data}
 
             # Check if END command form RX data else send new TX data
             if "END" in rx_msg:
                 break  # End process
-            else:
+            elif tx_msg:
                 q.put(tx_msg)  # send data as Queue message
 
         # End process

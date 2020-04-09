@@ -5,7 +5,9 @@ import time
 import sys
 import pyrealsense2 as rs
 import numpy as np
+from threading import Thread
 import module.config as conf
+import module.shared as shared
 
 class AppState:
     def __init__(self, camera_offset=None, win_name='RealSense'):
@@ -61,6 +63,10 @@ class Camera:
         self.state = state  # General ImageHandler model state
         self.out = out  # General Image handler output if not changed
 
+        # Data from camera
+        self.image = None
+        self.verts = None
+
 
         # Setup camera
         try:
@@ -79,7 +85,6 @@ class Camera:
             self.decimate.set_option(rs.option.filter_magnitude, 2 ** decimation)
         except Exception as err:
             print('Could not set decimation! \nError: ', err)
-
 
     def mouse_cb(self, event, x, y, flags, param):
         state = self.state
@@ -152,6 +157,7 @@ class Camera:
 
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
+        self.image = color_image
 
         depth_colormap = np.asanyarray(
             self.colorizer.colorize(depth_frame).get_data())
@@ -166,10 +172,10 @@ class Camera:
 
         # Pointcloud data to arrays
         v, t = points.get_vertices(), points.get_texture_coordinates()
-        verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+        self.verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
         texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
 
-        return v, t, verts, texcoords, color_source, mapped_frame
+        return v, t, self.verts, texcoords, color_source, mapped_frame
 
     def get_image(self):
         """
@@ -219,9 +225,8 @@ class Camera:
 
         # Pointcloud data to arrays
         v = points.get_vertices()
-        verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
-
-        return verts
+        self.verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+        return self.verts
 
     def get_texcoords(self):
         # Wait for a coherent pair of frames: depth
@@ -401,6 +406,7 @@ out = np.empty((conf.frame_height, conf.frame_width, 3), dtype=np.uint8)
 
 state = AppState(conf.camera_car_offset)
 
+
 def init_pipe(width=640, height=480, fps=0, dfps=0):
     """
     Setup function for Realsense pipe
@@ -431,9 +437,11 @@ def init_camera():
         pipe = init_pipe(conf.frame_width, conf.frame_height, conf.fps, conf.dfps)
         camera = Camera(pipe)
         camera.set_decimation(conf.DECIMATION)
+        return camera
     except Exception as err:
         print('Could not init camera!\nError: ', err)
-    return camera
+    return None
+
 
 def project(v):
     """project 3d vector array to 2d"""
