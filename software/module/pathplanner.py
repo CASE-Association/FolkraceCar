@@ -1,26 +1,23 @@
 import pyrealsense2 as rs
 from numpy.linalg import svd, det
 import multiprocessing as mp
-from module.imagehandler import *
+from module.camera import *
 import numpy as np
 import sys
-from module.imagehandler import Camera
+from module.camera import Camera
 from module.config import *
 
 
 class PathFinder:
     def __init__(self, Camera, Car):
-        """
-        Gradient decent solving path planner ## todo Evaluate against other methods of path planning
-        :param Car: Object to give driving vector
-        """
+
         self.cam = Camera
         self.cam.decimate.set_option(rs.option.filter_magnitude, 2 ** 3)
         self.car = Car
         self.running = False
         self._camera_offset = self.car.size[2] - self.car.camera_offset[2]
 
-        self.points = np.transpose(self.cam.get_verts())  # todo fix some function to call instead
+        self.points = np.transpose(self.cam.get_verts())
         self.ground_plane = self._get_ground_plane()
 
         # Path planning variables
@@ -227,11 +224,6 @@ class PathFinder:
             self.theta = alpha * theta + (1 - alpha) * self.theta
             self.dist = alpha * max_dist + (1 - alpha) * self.dist
 
-
-
-
-
-
 def init_pipe(width=640, height=480, fps=0, dfps=0):
     """
     Setup function for Realsense pipe
@@ -263,7 +255,7 @@ def path_plan(car, q):
     Main Path planner Process
     :param car:
     :param q:
-    :return:
+    :return: none
     """
     rx_msg = []
 
@@ -271,6 +263,10 @@ def path_plan(car, q):
     cam = Camera(pipe)
     pp = PathFinder(cam, car)
     while True:
+        try:
+            rx_msg = q.get(block=False)
+        except Exception:
+            pass
         pp.ground_plane = pp._get_ground_plane()
         pp._get_path()
         _t_now = time.perf_counter()
@@ -281,10 +277,7 @@ def path_plan(car, q):
                   'theta': pp.theta,
                   'ground': pp.ground_plane,
                   'last_reading': pp.last_reading}
-        try:
-            rx_msg = q.get(block=False)
-        except Exception:
-            pass
+
         if "END" in rx_msg:
             while not q.empty():  # flush queue
                 q.get()

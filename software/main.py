@@ -7,9 +7,7 @@
 ## Copyright(c) 2015-2017 Intel Corporation. All Rights Reserved.
 
 TODO
-    Gwt ADC to work
-    Get rpm input to work
-    hw test
+    Get ADC to work
 """
 from module.carhandler import *
 from module.pathplanner import *
@@ -62,14 +60,14 @@ def main():
     # Create a fan controller
     FanController(fan_pin=FAN, on_temp=55, off_temp=45)
 
-    # Create Speed controller
+    # Create Speed controller  # todo move to CarHandler
     sc = SpeedControl(tacho_pin=HALL_SENSOR)
     sc.start()
 
-    #   Car is the process handling the dynamics of the car
+    #   CarHandler is the process handling the dynamics of the car
     car = CarHandler(car_size=car_size, camera_car_offset=camera_car_offset)
 
-    #   Actuator initialization  # todo move to car_handler
+    #   Actuator initialization  # todo move to CarHandler
     steer_servo = Servo(pin=STEER_SERVO, queue=Queue(), verbose=True)
     speed_servo = Servo(pin=MOTOR_PWM, queue=Queue(), verbose=True)
     steer_servo.start()

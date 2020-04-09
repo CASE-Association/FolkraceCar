@@ -1,91 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="pi@lazer:22">
+  <component name="PublishConfigData" autoUpload="Always" serverName="LaZer">
     <serverData>
-      <paths name="'Nano'">
+      <paths name="LaZer">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/CASE" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="Copy of project-level server 'Nano' (1)">
+      <paths name="Lazer">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="nano0@192.168.1.211:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/nano0/FolkraceCar" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="nano1@nano1:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="pi@192.168.1.191:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/CASE" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="pi@192.168.1.192:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/pi/CASE" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/software/realsense_examples" />
-          </excludedPaths>
-        </serverdata>
-      </paths>
-      <paths name="pi@192.168.1.32:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/pi/CASE" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="pi@lazer:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/pi/CASE" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="volumio@ampi:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="volumio@multiroom.local:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="volumio@multiroom:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="volumio@projectroom.local:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/CASE" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
