@@ -2,6 +2,7 @@
 
 import RPi.GPIO as GPIO
 import multiprocessing as mp
+from module import shared
 import time
 
 
@@ -13,7 +14,6 @@ class FanController:
         self._verbose = verbose
 
         _p = mp.Process(target=self._run)
-        _p.daemon = True
         _p.start()
 
     def _run(self):
@@ -34,7 +34,7 @@ class FanController:
             GPIO.output(self._fan_pin, fan_state)
             if self._verbose:
                 print("Cpu temp", round(temp, 2), "| fan is:", ('\033[94mOff\033[0m', '\033[92mOn\033[0m')[fan_state])
-
+            shared.cpu_temp.value = temp
             time.sleep(dt)
 
 

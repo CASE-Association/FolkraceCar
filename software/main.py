@@ -80,7 +80,7 @@ def main():
     # init
 
     # Create a fan controller
-    #FanController(fan_pin=FAN, on_temp=55, off_temp=45)  # todo activate when needed
+    FanController(fan_pin=FAN, on_temp=55, off_temp=45)  # todo activate when needed
 
     # Create Speed controller  # todo move to CarHandler
     sc = SpeedControl(tacho_pin=HALL_SENSOR)
@@ -109,7 +109,7 @@ def main():
     #  Test code
     if STREAM:
         image_show = Thread(target=show_raw_image)
-        image_show.daemon = True
+        #image_show.daemon = True
         image_show.start()
 
 
@@ -149,7 +149,9 @@ def main():
                 print('\033[92m{}\033[0m'.format('-'*53))
                 print('Steer: {:2.0f}deg \n'
                       'Speed: {:2.3f}m/s \n'
-                      'Power: {}%'.format(theta*4, sc.speed, sc.power))
+                      'Power: {}%\n'
+                      'Cpu Temp: {:2.1f}c'
+                      .format(theta*4, sc.speed, sc.power, shared.cpu_temp.value))
                 print('\nCtrl-C to end')
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup

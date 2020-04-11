@@ -1,4 +1,5 @@
 import multiprocessing as mp
+
 import numpy as np
 import ctypes as c
 from module.config import *
@@ -25,7 +26,8 @@ if VERTSRAW:
 # Heading
 # todo
 
-# etc...
+# Cpu temp
+cpu_temp = mp.Value('f', 0.0)
 
 
 def nparray_to_rawarray(arr):
