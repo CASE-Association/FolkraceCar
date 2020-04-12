@@ -22,7 +22,7 @@ from threading import Thread
 import time
 import os
 
-from module.WebControll import web
+from module.WebControl import web
 
 
 def plot_pointcloud(points, only_closest=False, step=3):
@@ -54,22 +54,6 @@ def plot_pointcloud(points, only_closest=False, step=3):
                 gray[p[2], p[0]] = p[1]
 
     return cv2.applyColorMap(gray, cv2.COLORMAP_JET)
-
-
-def show_raw_image():
-    i = 1
-    try:
-        while True:
-            img = shared.rawarray_to_nparray(shared.raw_image, conf.IMG_SIZE)
-            # save image
-            cv2.imwrite('/home/pi/CASE/img/Stream/img' + str(i) + '.jpg', img)
-            if i < 10:
-                i += 1
-            else:
-                i = 1
-            time.sleep(0.1)
-    except Exception as err:
-        print('Could not show feed! \nError: ', err)
 
 
 def main():
@@ -104,13 +88,6 @@ def main():
     if WEBGUI:
         wp = Process(target=web.main)
         wp.start()
-
-
-    #  Test code
-    if STREAM:
-        image_show = Thread(target=show_raw_image)
-        #image_show.daemon = True
-        image_show.start()
 
 
     _fps = 30
@@ -172,6 +149,7 @@ def main():
     car.end()
     speed_servo.end()
     steer_servo.end()
+
 
 
     print('\n\033[92m Main process ended\033[0m')

@@ -1,6 +1,6 @@
 import os
 import cv2
-from module.WebControll.base_camera import BaseCamera
+from module.WebControl.base_camera import BaseCamera
 from module import shared, config as conf
 
 

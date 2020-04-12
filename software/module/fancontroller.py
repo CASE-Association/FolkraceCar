@@ -14,6 +14,7 @@ class FanController:
         self._verbose = verbose
 
         _p = mp.Process(target=self._run)
+        #_p.daemon = True
         _p.start()
 
     def _run(self):

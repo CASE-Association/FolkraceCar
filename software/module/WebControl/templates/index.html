@@ -1,0 +1,129 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="http://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/Joystick.js') }}"></script>
+    <title>WebControl Demonstration</title>
+    <link rel="shortcut icon" type="image/ico" href="/static/CASE.ico"/>
+</head>
+<body style="background-color: #333333">
+
+<div class="middle_zone">
+    <!--
+    <div class="title_text">
+        <h1 align="center" style="color: darkgray; text-shadow:0 0 15px black">WebControl Demonstration</h1>
+    </div>
+    -->
+    <div id="ledzone" class="led_zone">
+        <div id="connex" style="float:left;width:100%;margin:0;padding:0;">
+            <div class="led-box">
+                <div class="led-red"></div>
+                <div class="led-text">Not Connected</div>
+            </div>
+        </div>
+    </div>
+
+    <img src="{{ url_for('video_feed') }}" alt="Camera stream" class="stream_zone">
+
+
+    <!-- style="border:1px solid #1DB954; box-shadow:0 0 15px black; border-radius: 5px" -->
+    <div id="infozone" class="info_zone">
+        <p style="margin:0;padding:0;text-align:center;border-bottom:1px solid #333;">WebControl v1.0</p>
+        <div id="output0" style="float:left;width:100%;">Joystick left</div>
+        <div id="output1" style="float:left;width:100%;">Joystick right</div>
+        <div id="output2" style="float:left;width:100%;">Buttons</div>
+    </div>
+    <!--
+    <div id="buttonzone">
+        <a href="#" id="button1" class="button buttonA noSelect" style="float:right;"></a>
+        <a href="#" id="button3" class="button buttonFS noSelect" style="float:right;"></a>
+        <a href="#" id="button2" class="button buttonB noSelect" style="float:right;"></a>
+    </div>
+    -->
+</div>
+
+<img id="joystick" src="{{url_for('static', filename='CASE_logo.png')}}" alt="" class="joystick_zone"/>
+<!-- <div id="joystick" class="joystick_zone"></div> -->
+
+
+<!-- SocketIO script -->
+<script type="text/javascript">
+    var socket_status = io.connect('http://' + location.host + "/status");
+    var socket_control = io.connect('http://' + location.host + "/control");
+
+    $(document).ready(function () {
+        /* connected display */
+        setInterval(function () {
+            if (socket_status.connected) {
+                $('#connex').html('<div class="led-box"><div class="led-blue"></div><div class="led-text">Connected</div></div>');
+            } else {
+                $('#connex').html('<div class="led-box"><div class="led-red"></div><div class="led-text">Not Connected</div></div>');
+            }
+        }, 1000);
+
+        $('#output').text("starting");
+
+        /******************************************
+         BUTTONS
+         *****************************************/
+        $(document).on('touchstart touchmove', '#button1', function (evt) {
+            $('#output2').html("Button1");
+            socket_control.emit('control', {data: {"A": 1}});
+            evt.preventDefault();
+        });
+        $(document).on('touchstart touchmove', '#button2', function (evt) {
+            socket_control.emit('control', {data: {"B": 1}});
+            $('#output2').html("Button2");
+            evt.preventDefault();
+        });
+
+        /******************************************
+         JOYSTICKS
+         *****************************************/
+            //socket_control.emit('control', {data:{"left":[(data.distance/options.size), data.angle.degree]}});
+        var test = new Joystick("joystick", 0, socket_control, "left");
+        var test2 = new Joystick("joystick2", 1, socket_control, "right");
+
+        window.oncontextmenu = function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            return false;
+        }
+    });
+</script>
+
+<!-- Fullscreen script -->
+<script>
+    var elem = document.documentElement;
+
+    function openFullscreen() {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        }
+    }
+
+    function closeFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+</script>
+
+<h6 style="font-family:Orbitron; margin-left: 5%;margin-bottom: 0; color: deeppink; text-shadow:0 0 15px black" id="maker">CASE Association WebController by Stefan Larsson</h6>
+</body>
+</html>

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from importlib import import_module
-from module.WebControll import camera_opencv
+from module.WebControl import camera_opencv
 import os
 from flask import Flask, render_template, Response
+from module import shared, config as conf
+import cv2
 
 Camera = camera_opencv.Camera
 
@@ -30,5 +32,9 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-if __name__ == '__main__':
+def main():
     app.run(host='0.0.0.0', threaded=True)
+
+
+if __name__ == '__main__':
+    main()
