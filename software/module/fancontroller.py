@@ -13,8 +13,8 @@ class FanController:
         self._t_off = off_temp
         self._verbose = verbose
 
-        _p = mp.Process(target=self._run)
-        #_p.daemon = True
+        _p = mp.Process(target=self._run, name='fan_controller')
+        _p.daemon = True
         _p.start()
 
     def _run(self):

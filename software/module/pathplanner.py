@@ -199,6 +199,7 @@ class PathFinder:
         # todo:
         #  get theta span depending on furthest distance
         #  weight non-linear path depending on speed
+        #  imp max theta and speed change
 
         theta = None
         tunnel_size = self._car.size[0:3]  # [w h l_offset]
@@ -224,7 +225,7 @@ class PathFinder:
         if theta is not None:
             # Smoothing
             self.theta = alpha * theta + (1 - alpha) * self.theta
-            self.dist = alpha * max_dist + (1 - alpha) * self.dist
+            self.dist = min(alpha * max_dist + (1 - alpha) * self.dist, max_dist)
 
     def _image_extraction(self):
         """
@@ -253,7 +254,7 @@ class PathFinder:
         # If Raw image is requested, start tread for image extraction
         if conf.IMAGERAW:
             ie = Thread(target=self._image_extraction)
-            ie.daemon = True
+            #ie.daemon = True
             ie.start()
 
         while True:

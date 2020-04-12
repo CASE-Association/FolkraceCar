@@ -66,7 +66,7 @@ class SpeedControl:
 
     def start(self):
         # Create speed controller Process
-        self.process = mp.Process(target=self.run, args=(self._speed, self._target_speed, self._power,))
+        self.process = mp.Process(target=self.run, args=(self._speed, self._target_speed, self._power,), name='speed_controller')
         # Start speed controller
         self.process.start()
 

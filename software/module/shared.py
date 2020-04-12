@@ -1,5 +1,5 @@
 import multiprocessing as mp
-
+import logging
 import numpy as np
 import ctypes as c
 from module.config import *
@@ -9,6 +9,9 @@ Global variables shared between processes
 """
 global raw_image
 
+
+# Loglevel
+LOG_LEVEL = logging.ERROR
 # Raw Image array
 t_raw_image = mp.Value('f', 0.0)  # timestamp of last frame
 
@@ -21,10 +24,10 @@ if VERTSRAW:
     raw_verts = None
 
 # Speed
-# todo
+speed = mp.Value('f', 0.0)
 
 # Heading
-# todo
+steer = mp.Value('f', 0.0)
 
 # Cpu temp
 cpu_temp = mp.Value('f', 0.0)

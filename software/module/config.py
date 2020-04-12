@@ -9,7 +9,9 @@ WEBGUI = True
 STREAM = False
 IMAGERAW = WEBGUI  # generate raw image if Web GUI is used
 VERTSRAW = False
+FOLKRACE = False
 
+DEBUG = False
 
 frame_width = 424
 frame_height = 240
