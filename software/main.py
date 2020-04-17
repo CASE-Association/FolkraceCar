@@ -11,49 +11,17 @@ TODO
     Get Webcontrol to work
     Get OLED screen to work
 """
+# module imports
 from module.carhandler import *
 from module.pathplanner import *
 from module.servo import *
 from module.config import *
 from module.fancontroller import *
 from module.speedcontroller import *
+from module.WebControl import web
 import module.shared as shared
-from threading import Thread
 import time
 import os
-
-from module.WebControl import web
-
-
-def plot_pointcloud(points, only_closest=False, step=3):
-    z_range = [0.01, 5]  # depth span in meters
-    _plot_scale = frame_height / z_range[1]
-
-    pts = np.multiply(points, _plot_scale)
-    pts[:, 0] += frame_width / 2  # center x axis
-    pts[:, 2] = frame_height - pts[:, 2]  # Flip z projection
-    pts = pts.astype(int)
-    # pts[:, 1] *= 255/np.max(np.abs(pts[:, 1]))  # scale to fit grayscale
-    # _inliers = np.where(np.logical_and(pts[0] <= frame_width, pts[2] <= frame_height))
-    # pts[1] -= frame_height
-    # pts_coord = np.transpose([pts[:, 0], pts[:, 2], pts[:, 1]])
-    gray = np.zeros((frame_height, frame_width), np.uint8)
-
-    if only_closest:
-        for w in range(0, frame_width, step):
-            i = np.where(np.logical_and(pts[:, 0] >= w, pts[:, 0] < w + step))[0]  # get points in line w
-            if i.any():
-                j = np.where(pts[i, 2] == np.min(pts[i, 2]))[0]  # get closest point on line w
-                k = i[j[0]]
-                p = pts[k]
-                if 0 <= p[0] < frame_width and 0 <= p[2] < frame_height and p[1] <= 255:
-                    gray[p[2], p[0]] = p[1]
-    else:
-        for p in pts.astype(int):
-            if 0 <= p[0] < frame_width and 0 <= p[2] < frame_height and p[1] <= 255:
-                gray[p[2], p[0]] = p[1]
-
-    return cv2.applyColorMap(gray, cv2.COLORMAP_JET)
 
 
 def main():
@@ -144,9 +112,7 @@ def main():
                     os.system('clear')
                     str_print = _str
                     print(str_print)
-                else:
-                    pass
-                    #print('.', end='')
+
 
                 speed = max(min(_max_speed, (3 * dist - 1) ** 2), -_max_speed)  # crude speed setup
                 steer = theta * 4

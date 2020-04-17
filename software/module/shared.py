@@ -9,15 +9,14 @@ Global variables shared between processes
 """
 global raw_image
 
-
 # Loglevel
 LOG_LEVEL = logging.ERROR
+
 # Raw Image array
 t_raw_image = mp.Value('f', 0.0)  # timestamp of last frame
 
 if IMAGERAW:
     raw_image = mp.RawArray('d', IMG_SIZE[0] * IMG_SIZE[1] * IMG_SIZE[2])
-
 
 # Raw Verts array
 if VERTSRAW:
@@ -32,6 +31,16 @@ steer = mp.Value('f', 0.0)
 # Cpu temp
 cpu_temp = mp.Value('f', 0.0)
 
+# Battery current
+I_b = mp.Value('f', 0.0)
+
+# Battery voltage
+U_b = mp.Value('f', 0.0)
+
+# Motor current
+I_m = mp.Value('f', 0.0)
+
+#
 
 def nparray_to_rawarray(arr):
     global raw_image

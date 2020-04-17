@@ -26,10 +26,12 @@ car_size = [0.2, 0.05, 0.12, 0.05]  # [w h l r]
 
 # I/O CONFIG
 
-FAN = 22
+FAN = 15
+HALL_SENSOR_A = 18
+HALL_SENSOR_B = 22
 STEER_SERVO = 32
 MOTOR_PWM = 33
-HALL_SENSOR = 36
+
 
 
 # Image config
