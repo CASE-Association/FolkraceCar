@@ -55,7 +55,7 @@ pianohat==0.1.0
 picamera==1.13
 piglow==1.2.5
 pigpio==1.44
-Pillow==5.4.1
+Pillow==8.1.1
 prettytable==0.7.2
 psutil==5.5.1
 pycrypto==2.6.1
